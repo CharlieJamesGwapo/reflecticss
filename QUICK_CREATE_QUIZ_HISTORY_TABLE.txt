@@ -1,0 +1,228 @@
+================================================================================
+  CREATE QUIZ_HISTORY TABLE IN NEON DATABASE - QUICK GUIDE ✅
+================================================================================
+
+PROBLEM:
+  ❌ quiz_history table doesn't exist in Neon database
+  ❌ Quiz data not being saved
+  ❌ Dashboard stats show 0
+
+SOLUTION:
+  ✅ Create quiz_history table in Neon
+  ✅ Add indexes for performance
+  ✅ Verify table creation
+  ✅ Restart backend
+
+================================================================================
+  EASIEST METHOD: NEON CONSOLE
+================================================================================
+
+STEP 1: Open Neon Console
+  1. Go to https://console.neon.tech
+  2. Login to your account
+  3. Select your project
+  4. Click "SQL Editor" in left sidebar
+
+STEP 2: Create Table
+  1. Click "New Query"
+  2. Copy and paste this SQL:
+
+---BEGIN SQL---
+CREATE TABLE IF NOT EXISTS quiz_history (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  quiz_type VARCHAR(50) NOT NULL,
+  category VARCHAR(100),
+  score INTEGER NOT NULL,
+  correct_answers INTEGER NOT NULL,
+  total_questions INTEGER NOT NULL,
+  completed_at TIMESTAMP NOT NULL,
+  archived_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_quiz_history_user_id ON quiz_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_history_completed_at ON quiz_history(completed_at);
+CREATE INDEX IF NOT EXISTS idx_quiz_history_archived_at ON quiz_history(archived_at);
+---END SQL---
+
+  3. Click "Execute"
+  4. You should see "✅ Success"
+
+STEP 3: Verify Table
+  1. Click "New Query"
+  2. Paste this SQL:
+
+SELECT * FROM information_schema.tables WHERE table_name = 'quiz_history';
+
+  3. Click "Execute"
+  4. You should see quiz_history table listed
+
+================================================================================
+  ALTERNATIVE METHOD: MIGRATION SCRIPT
+================================================================================
+
+STEP 1: Run Migration
+  cd backend
+  node migrations/create_quiz_history_table.js
+
+STEP 2: Check Output
+  You should see:
+  ✅ quiz_history table created successfully
+  ✅ Index on user_id created
+  ✅ Index on completed_at created
+  ✅ Index on archived_at created
+  ✅ All indexes created successfully
+  ✅ quiz_history table verified in database
+
+================================================================================
+  TABLE STRUCTURE
+================================================================================
+
+Column Name        | Data Type           | Constraint
+─────────────────────────────────────────────────────────
+id                 | SERIAL              | PRIMARY KEY
+user_id            | INTEGER             | NOT NULL, FK
+quiz_type          | VARCHAR(50)         | NOT NULL
+category           | VARCHAR(100)        | NULLABLE
+score              | INTEGER             | NOT NULL
+correct_answers    | INTEGER             | NOT NULL
+total_questions    | INTEGER             | NOT NULL
+completed_at       | TIMESTAMP           | NOT NULL
+archived_at        | TIMESTAMP           | NULLABLE
+created_at         | TIMESTAMP           | DEFAULT NOW()
+
+================================================================================
+  STEP 4: RESTART BACKEND
+================================================================================
+
+1. Stop current backend server (Ctrl+C)
+
+2. Start backend again:
+   cd backend
+   npm start
+
+3. Wait for server to start
+
+4. Check console for no errors
+
+================================================================================
+  STEP 5: TEST QUIZ COMPLETION
+================================================================================
+
+1. Login to your account
+2. Click "Quizzes" in navbar
+3. Click "Start Quiz" on COC 1
+4. Answer all 29 questions
+5. On last question, click "Next"
+6. See completion alert with score
+7. Check dashboard - stats should update
+8. Quizzes Attempted should be 1 (not 0)
+9. Average Score should show your score (not 0%)
+
+================================================================================
+  STEP 6: VERIFY DATA SAVED
+================================================================================
+
+1. Click "Progress" in navbar
+2. You should see your completed quiz
+3. See score, date, time
+4. Logout from account
+5. Login again
+6. Go to Dashboard
+7. Stats should STILL show your quiz
+8. Click "Progress"
+9. Quiz history should STILL be there
+
+================================================================================
+  VERIFY TABLE IN NEON
+================================================================================
+
+In Neon Console, run these queries:
+
+CHECK IF TABLE EXISTS:
+SELECT * FROM information_schema.tables WHERE table_name = 'quiz_history';
+
+CHECK TABLE STRUCTURE:
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'quiz_history'
+ORDER BY ordinal_position;
+
+CHECK INDEXES:
+SELECT indexname FROM pg_indexes WHERE tablename = 'quiz_history';
+
+CHECK DATA:
+SELECT * FROM quiz_history ORDER BY completed_at DESC LIMIT 10;
+
+================================================================================
+  TROUBLESHOOTING
+================================================================================
+
+ISSUE: "relation quiz_history does not exist"
+FIX:
+  1. Table hasn't been created yet
+  2. Follow steps above to create table
+  3. Restart backend server
+
+ISSUE: Stats still show 0 after quiz
+FIX:
+  1. Check table exists in Neon
+  2. Check backend is running
+  3. Restart backend server
+  4. Complete quiz again
+  5. Refresh dashboard
+
+ISSUE: "foreign key violation" error
+FIX:
+  1. Make sure user_id exists in users table
+  2. Check user is logged in
+  3. Restart backend server
+
+ISSUE: "permission denied" error
+FIX:
+  1. Check Neon credentials are correct
+  2. Check user has proper permissions
+  3. Try again with correct credentials
+
+================================================================================
+  QUICK CHECKLIST
+================================================================================
+
+SETUP:
+  [ ] Open Neon Console
+  [ ] Create quiz_history table
+  [ ] Create indexes
+  [ ] Verify table exists
+  [ ] Restart backend server
+
+TESTING:
+  [ ] Login to account
+  [ ] Take a quiz
+  [ ] Complete all questions
+  [ ] See completion alert
+  [ ] Check dashboard stats update
+  [ ] Quizzes Attempted = 1
+  [ ] Average Score = your score
+  [ ] Click Progress
+  [ ] See quiz in history
+
+PERSISTENCE:
+  [ ] Logout from account
+  [ ] Login again
+  [ ] Go to Dashboard
+  [ ] Stats still show quiz
+  [ ] Click Progress
+  [ ] Quiz history still there
+
+================================================================================
+
+YOUR QUIZ_HISTORY TABLE IS NOW CREATED!
+
+Quiz data will be saved to Neon database
+Stats will update in real-time
+Progress will persist across sessions
+All features fully functional
+
+================================================================================

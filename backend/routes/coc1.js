@@ -1275,6 +1275,114 @@ router.post('/quiz/submit', verifyToken, async (req, res) => {
   }
 });
 
+// Complete quiz and save final score
+router.post('/quiz/complete', verifyToken, async (req, res) => {
+  console.log('\n========================================');
+  console.log('🎯 QUIZ COMPLETION ENDPOINT CALLED');
+  console.log('========================================');
+  
+  try {
+    const { category, score, correct, total, completedAt } = req.body;
+    const userId = req.userId;
+
+    console.log('\n📝 Request Data:');
+    console.log('  User ID:', userId);
+    console.log('  Category:', category);
+    console.log('  Score:', score, '(type:', typeof score + ')');
+    console.log('  Correct:', correct, '(type:', typeof correct + ')');
+    console.log('  Total:', total, '(type:', typeof total + ')');
+    console.log('  Completed At:', completedAt);
+
+    // Validate input
+    if (!userId || score === undefined || correct === undefined || !total || !completedAt) {
+      console.error('❌ VALIDATION FAILED - Missing required fields');
+      console.error('  userId:', userId);
+      console.error('  score:', score);
+      console.error('  correct:', correct);
+      console.error('  total:', total);
+      console.error('  completedAt:', completedAt);
+      return res.status(400).json({ error: 'Missing required fields', received: { category, score, correct, total, completedAt } });
+    }
+
+    // Create quiz_history table if it doesn't exist
+    console.log('\n🔧 Creating quiz_history table if not exists...');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS quiz_history (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        quiz_type VARCHAR(50) NOT NULL,
+        category VARCHAR(100),
+        score INTEGER NOT NULL,
+        correct_answers INTEGER NOT NULL,
+        total_questions INTEGER NOT NULL,
+        completed_at TIMESTAMP NOT NULL,
+        archived_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+    console.log('✅ Table ready');
+
+    // Insert quiz completion record
+    console.log('\n💾 Inserting quiz record...');
+    console.log('  Values to insert:');
+    console.log('    user_id:', userId);
+    console.log('    quiz_type: COC1');
+    console.log('    category:', category);
+    console.log('    score:', parseInt(score));
+    console.log('    correct_answers:', parseInt(correct));
+    console.log('    total_questions:', parseInt(total));
+    console.log('    completed_at:', completedAt);
+    
+    const result = await pool.query(
+      `INSERT INTO quiz_history (user_id, quiz_type, category, score, correct_answers, total_questions, completed_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, score, correct_answers, total_questions, completed_at`,
+      [userId, 'COC1', category, parseInt(score), parseInt(correct), parseInt(total), completedAt]
+    );
+    console.log('✅ Quiz record inserted successfully');
+    console.log('  Inserted record:', result.rows[0]);
+
+    // Get user stats
+    console.log('\n📊 Calculating user stats...');
+    const statsResult = await pool.query(
+      `SELECT COUNT(*) as count, AVG(score) as avg_score FROM quiz_history WHERE user_id = $1`,
+      [userId]
+    );
+    console.log('✅ Stats calculated');
+    console.log('  Total quizzes:', statsResult.rows[0].count);
+    console.log('  Average score:', statsResult.rows[0].avg_score);
+
+    const response = {
+      success: true,
+      message: 'Quiz completed successfully',
+      quizRecord: result.rows[0],
+      stats: {
+        quizzesAttempted: parseInt(statsResult.rows[0].count),
+        averageScore: Math.round(statsResult.rows[0].avg_score || 0)
+      }
+    };
+
+    console.log('\n✅ SENDING RESPONSE:');
+    console.log(JSON.stringify(response, null, 2));
+    console.log('========================================\n');
+    
+    res.json(response);
+  } catch (error) {
+    console.error('\n❌ ERROR IN QUIZ COMPLETION:');
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error details:', error);
+    console.error('========================================\n');
+    
+    res.status(500).json({ 
+      error: 'Failed to complete quiz', 
+      details: error.message,
+      code: error.code 
+    });
+  }
+});
+
 // Get user progress
 router.get('/progress', verifyToken, async (req, res) => {
   try {

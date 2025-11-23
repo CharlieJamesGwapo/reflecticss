@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Lessons from './pages/Lessons';
@@ -15,6 +16,7 @@ import COCSelection from './pages/COCSelection';
 import ReviewerSelection from './pages/ReviewerSelection';
 import Reviewer from './pages/Reviewer';
 import AccountSettings from './pages/AccountSettings';
+import QuizHistory from './pages/QuizHistory';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -65,7 +67,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {!user ? (
         // Auth page when not logged in
         <Routes>
@@ -74,9 +76,9 @@ function App() {
         </Routes>
       ) : (
         // App pages when logged in
-        <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+        <div className="min-h-screen w-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex flex-col">
           <Navbar user={user} setUser={setUser} />
-          <main className="pt-20">
+          <main className="pt-16 sm:pt-20 w-full flex-grow">
             <Routes>
               <Route path="/" element={<Dashboard user={user} />} />
               <Route path="/lessons" element={<Lessons />} />
@@ -91,9 +93,11 @@ function App() {
               <Route path="/reviewer-selection" element={<ReviewerSelection />} />
               <Route path="/reviewer/:coc" element={<Reviewer />} />
               <Route path="/account-settings" element={<AccountSettings user={user} setUser={setUser} />} />
+              <Route path="/quiz-history" element={<QuizHistory />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       )}
     </Router>

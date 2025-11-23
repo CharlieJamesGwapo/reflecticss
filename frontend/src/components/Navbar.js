@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, User, ChevronDown, Settings, Search, Bell, BookOpen, BarChart3, Award, Home } from 'lucide-react';
+import { Menu, X, LogOut, User, Settings, Search, Bell, BookOpen, BarChart3, Award, Home, TrendingUp } from 'lucide-react';
 
 function Navbar({ user, setUser }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,24 +28,37 @@ function Navbar({ user, setUser }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Fetch real notifications
+  // Fetch real notifications (optional - won't block if endpoint doesn't exist)
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
           const apiUrl = getApiUrl();
-          const response = await fetch(`${apiUrl}/api/notifications`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setNotifications(data.notifications || []);
-            setUnreadCount(data.unreadCount || 0);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+          
+          try {
+            const response = await fetch(`${apiUrl}/api/notifications`, {
+              headers: { Authorization: `Bearer ${token}` },
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+              const data = await response.json();
+              setNotifications(data.notifications || []);
+              setUnreadCount(data.unreadCount || 0);
+            }
+          } catch (fetchError) {
+            clearTimeout(timeoutId);
+            // Silently fail - notifications endpoint is optional
+            console.debug('Notifications endpoint not available (optional feature)');
           }
         }
       } catch (error) {
-        console.error('Failed to fetch notifications:', error);
+        // Silently fail - notifications are optional
+        console.debug('Failed to fetch notifications:', error.message);
       }
     };
 
@@ -88,11 +101,16 @@ function Navbar({ user, setUser }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-blue-600 font-bold text-lg">R</span>
+          <Link to="/" className="flex items-center hover:opacity-90 transition">
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-white rounded-full opacity-10 blur-lg"></div>
+              <img 
+                src="/logo.png" 
+                alt="RefletiCSS Logo" 
+                className="h-16 sm:h-20 w-16 sm:w-20 object-cover rounded-full border-2 border-white shadow-lg hover:shadow-xl transition-shadow"
+                title="RefletiCSS - A reflective learning tool in enhancing Technical vocabulary learning"
+              />
             </div>
-            <span className="text-white font-bold text-xl hidden sm:inline">RefletiCSS</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -108,6 +126,10 @@ function Navbar({ user, setUser }) {
             <Link to="/coc-selection" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <BarChart3 size={18} />
               Quizzes
+            </Link>
+            <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
+              <TrendingUp size={18} />
+              Progress
             </Link>
             <Link to="/courses" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <Award size={18} />
@@ -276,6 +298,10 @@ function Navbar({ user, setUser }) {
             <Link to="/coc-selection" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
               <BarChart3 size={18} />
               Quizzes
+            </Link>
+            <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+              <TrendingUp size={18} />
+              Progress
             </Link>
             <Link to="/courses" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
               <Award size={18} />

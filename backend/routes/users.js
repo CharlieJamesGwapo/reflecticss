@@ -52,34 +52,30 @@ router.get('/stats', verifyToken, async (req, res) => {
       [userId]
     );
 
-    // Quizzes attempted
+    // Quizzes attempted (from quiz_history table)
     const quizzesResult = await db.query(
-      'SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = $1',
+      'SELECT COUNT(*) as count FROM quiz_history WHERE user_id = $1',
       [userId]
     );
 
-    // Average score
+    // Average score (from quiz_history table)
     const scoreResult = await db.query(
-      'SELECT AVG(score) as average FROM quiz_attempts WHERE user_id = $1',
+      'SELECT AVG(score) as average FROM quiz_history WHERE user_id = $1',
       [userId]
     );
 
     // Streak (simplified - days with activity)
     const streakResult = await db.query(`
-      SELECT COUNT(DISTINCT DATE(created_at)) as days
-      FROM (
-        SELECT created_at FROM lesson_progress WHERE user_id = $1
-        UNION ALL
-        SELECT created_at FROM quiz_attempts WHERE user_id = $1
-      ) as activity
-      WHERE created_at >= NOW() - INTERVAL '30 days'
+      SELECT COUNT(DISTINCT DATE(completed_at)) as days
+      FROM quiz_history
+      WHERE user_id = $1 AND completed_at >= NOW() - INTERVAL '30 days'
     `, [userId]);
 
     res.json({
-      lessonsCompleted: parseInt(lessonsResult.rows[0].count),
-      quizzesAttempted: parseInt(quizzesResult.rows[0].count),
+      lessonsCompleted: parseInt(lessonsResult.rows[0].count || 0),
+      quizzesAttempted: parseInt(quizzesResult.rows[0].count || 0),
       averageScore: Math.round(scoreResult.rows[0].average || 0),
-      streakDays: parseInt(streakResult.rows[0].days)
+      streakDays: parseInt(streakResult.rows[0].days || 0)
     });
   } catch (error) {
     console.error(error);
@@ -148,6 +144,107 @@ router.put('/profile', verifyToken, (req, res, next) => {
       error: 'Failed to update profile. Please try again.',
       details: error.message 
     });
+  }
+});
+
+// Get quiz history
+router.get('/quiz-history', verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Create quiz_history table if it doesn't exist
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS quiz_history (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        quiz_type VARCHAR(50) NOT NULL,
+        category VARCHAR(100),
+        score INTEGER NOT NULL,
+        correct_answers INTEGER NOT NULL,
+        total_questions INTEGER NOT NULL,
+        completed_at TIMESTAMP NOT NULL,
+        archived_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW(),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Get recent quizzes (not archived)
+    const historyResult = await db.query(
+      `SELECT id, quiz_type, category, score, correct_answers, total_questions, completed_at
+       FROM quiz_history
+       WHERE user_id = $1 AND archived_at IS NULL
+       ORDER BY completed_at DESC
+       LIMIT 50`,
+      [userId]
+    );
+
+    // Get archived quizzes
+    const archivedResult = await db.query(
+      `SELECT id, quiz_type, category, score, correct_answers, total_questions, completed_at, archived_at
+       FROM quiz_history
+       WHERE user_id = $1 AND archived_at IS NOT NULL
+       ORDER BY archived_at DESC
+       LIMIT 50`,
+      [userId]
+    );
+
+    res.json({
+      history: historyResult.rows,
+      archived: archivedResult.rows
+    });
+  } catch (error) {
+    console.error('Error fetching quiz history:', error);
+    res.status(500).json({ error: 'Failed to fetch quiz history' });
+  }
+});
+
+// Archive quiz
+router.post('/quiz-history/:id/archive', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const result = await db.query(
+      `UPDATE quiz_history
+       SET archived_at = NOW()
+       WHERE id = $1 AND user_id = $2
+       RETURNING id, archived_at`,
+      [id, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    res.json({ success: true, quiz: result.rows[0] });
+  } catch (error) {
+    console.error('Error archiving quiz:', error);
+    res.status(500).json({ error: 'Failed to archive quiz' });
+  }
+});
+
+// Delete quiz
+router.delete('/quiz-history/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const result = await db.query(
+      `DELETE FROM quiz_history
+       WHERE id = $1 AND user_id = $2
+       RETURNING id`,
+      [id, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    res.json({ success: true, message: 'Quiz deleted' });
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    res.status(500).json({ error: 'Failed to delete quiz' });
   }
 });
 

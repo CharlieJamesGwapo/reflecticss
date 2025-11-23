@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Loader, Upload, X } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 function Auth({ setUser }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -87,17 +88,29 @@ function Auth({ setUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: error,
+        confirmButtonColor: '#2563eb',
+        customClass: {
+          container: 'swal-container'
+        }
+      });
+      return;
+    }
 
     setLoading(true);
     setError('');
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
       
       if (isLogin) {
         // Login - simple JSON request
-        const response = await fetch(`${process.env.REACT_APP_API_URL}${endpoint}`, {
+        const response = await fetch(`${apiUrl}${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -109,13 +122,38 @@ function Auth({ setUser }) {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(data.error || 'Authentication failed');
+          const errorMsg = data.error || 'Authentication failed';
+          setError(errorMsg);
+          
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: errorMsg,
+            confirmButtonColor: '#2563eb',
+            customClass: {
+              container: 'swal-container'
+            }
+          });
           return;
         }
 
         // Store token and user
         localStorage.setItem('token', data.token);
         setUser(data.user);
+
+        // Success alert
+        await Swal.fire({
+          icon: 'success',
+          title: 'Welcome Back!',
+          text: `Hello ${data.user.name}! You're logged in successfully.`,
+          confirmButtonColor: '#2563eb',
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            container: 'swal-container'
+          }
+        });
+
         navigate('/');
       } else {
         // Registration - FormData for file upload
@@ -127,7 +165,7 @@ function Auth({ setUser }) {
           formDataToSend.append('profilePhoto', photoFile);
         }
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL}${endpoint}`, {
+        const response = await fetch(`${apiUrl}${endpoint}`, {
           method: 'POST',
           body: formDataToSend
         });
@@ -135,17 +173,53 @@ function Auth({ setUser }) {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(data.error || 'Registration failed');
+          const errorMsg = data.error || 'Registration failed';
+          setError(errorMsg);
+          
+          Swal.fire({
+            icon: 'error',
+            title: 'Registration Failed',
+            text: errorMsg,
+            confirmButtonColor: '#2563eb',
+            customClass: {
+              container: 'swal-container'
+            }
+          });
           return;
         }
 
         // Store token and user
         localStorage.setItem('token', data.token);
         setUser(data.user);
+
+        // Success alert
+        await Swal.fire({
+          icon: 'success',
+          title: 'Account Created!',
+          text: `Welcome ${data.user.name}! Your account has been created successfully.`,
+          confirmButtonColor: '#2563eb',
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            container: 'swal-container'
+          }
+        });
+
         navigate('/');
       }
     } catch (err) {
-      setError('Connection error. Please try again.');
+      const errorMsg = 'Connection error. Please check your internet and try again.';
+      setError(errorMsg);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Connection Error',
+        text: errorMsg,
+        confirmButtonColor: '#2563eb',
+        customClass: {
+          container: 'swal-container'
+        }
+      });
       console.error('Auth error:', err);
     } finally {
       setLoading(false);
@@ -153,23 +227,31 @@ function Auth({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 flex items-center justify-center p-3 sm:p-4 py-8 sm:py-0">
       {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-20 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+      <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute -bottom-8 left-20 w-64 sm:w-96 h-64 sm:h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       {/* Main container */}
       <div className="relative w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden backdrop-blur-lg bg-opacity-95">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-8 text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">CSS Review</h1>
-            <p className="text-blue-100">Master CSS with Interactive Learning</p>
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden backdrop-blur-lg bg-opacity-95">
+          {/* Header with Logo */}
+          <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-4 sm:px-6 py-8 sm:py-10 text-center flex flex-col items-center justify-center">
+            <div className="relative flex items-center justify-center mb-4">
+              <div className="absolute inset-0 bg-white rounded-full opacity-10 blur-lg"></div>
+              <img 
+                src="/logo.png" 
+                alt="RefletiCSS Logo" 
+                className="h-24 sm:h-32 w-24 sm:w-32 object-cover rounded-full border-3 border-white shadow-lg"
+                title="RefletiCSS - A reflective learning tool in enhancing Technical vocabulary learning"
+              />
+            </div>
+            <p className="text-xs sm:text-sm text-blue-100 mt-2">Master CSS with Interactive Learning</p>
           </div>
 
           {/* Form container */}
-          <div className="p-8">
+          <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
             {/* Error message */}
             {error && (
               <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
@@ -178,48 +260,48 @@ function Auth({ setUser }) {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
               {/* Name field (Register only) */}
               {!isLogin && (
                 <>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                       Full Name
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3 text-blue-500" size={20} />
+                      <User className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
                       <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="John Doe"
-                        className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
                       />
                     </div>
                   </div>
 
                   {/* Profile Photo Upload (Register only) */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                       Profile Photo (Optional)
                     </label>
                     {photoPreview ? (
                       <div className="relative w-full">
-                        <img src={photoPreview} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
+                        <img src={photoPreview} alt="Preview" className="w-full h-32 sm:h-48 object-cover rounded-lg" />
                         <button
                           type="button"
                           onClick={removePhoto}
                           className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
                         >
-                          <X size={20} />
+                          <X size={18} />
                         </button>
                       </div>
                     ) : (
-                      <label className="w-full flex items-center justify-center px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
+                      <label className="w-full flex items-center justify-center px-3 sm:px-4 py-4 sm:py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
                         <div className="flex flex-col items-center">
-                          <Upload className="text-gray-400 mb-2" size={24} />
-                          <span className="text-sm text-gray-600">Click to upload photo</span>
+                          <Upload className="text-gray-400 mb-2" size={20} />
+                          <span className="text-xs sm:text-sm text-gray-600">Click to upload photo</span>
                           <span className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</span>
                         </div>
                         <input
@@ -236,43 +318,43 @@ function Auth({ setUser }) {
 
               {/* Email field */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 text-blue-500" size={20} />
+                  <Mail className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
                   />
                 </div>
               </div>
 
               {/* Password field */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 text-blue-500" size={20} />
+                  <Lock className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full pl-10 pr-12 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-blue-500 transition-colors"
+                    className="absolute right-3 top-2.5 sm:top-3 text-gray-400 hover:text-blue-500 transition-colors"
                   >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -280,18 +362,18 @@ function Auth({ setUser }) {
               {/* Confirm password field (Register only) */}
               {!isLogin && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 text-blue-500" size={20} />
+                    <Lock className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
                     />
                   </div>
                 </div>
@@ -301,11 +383,11 @@ function Auth({ setUser }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-4 sm:mt-6 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold py-2.5 sm:py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {loading ? (
                   <>
-                    <Loader size={20} className="animate-spin" />
+                    <Loader size={18} className="animate-spin" />
                     Processing...
                   </>
                 ) : (
@@ -315,15 +397,15 @@ function Auth({ setUser }) {
             </form>
 
             {/* Divider */}
-            <div className="my-6 flex items-center">
+            <div className="my-4 sm:my-6 flex items-center">
               <div className="flex-1 border-t-2 border-gray-200"></div>
-              <span className="px-3 text-gray-500 text-sm">or</span>
+              <span className="px-3 text-gray-500 text-xs sm:text-sm">or</span>
               <div className="flex-1 border-t-2 border-gray-200"></div>
             </div>
 
             {/* Toggle button */}
             <div className="text-center">
-              <p className="text-gray-600 mb-3">
+              <p className="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base">
                 {isLogin ? "Don't have an account?" : 'Already have an account?'}
               </p>
               <button
@@ -332,8 +414,10 @@ function Auth({ setUser }) {
                   setIsLogin(!isLogin);
                   setFormData({ email: '', password: '', name: '', confirmPassword: '' });
                   setError('');
+                  setPhotoFile(null);
+                  setPhotoPreview(null);
                 }}
-                className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+                className="text-blue-600 font-semibold hover:text-blue-700 transition-colors text-sm sm:text-base"
               >
                 {isLogin ? 'Create Account' : 'Sign In'}
               </button>
@@ -341,8 +425,8 @@ function Auth({ setUser }) {
           </div>
 
           {/* Footer */}
-          <div className="bg-gray-50 px-6 py-4 text-center border-t border-gray-200">
-            <p className="text-gray-600 text-xs">
+          <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 text-center border-t border-gray-200">
+            <p className="text-gray-600 text-xs sm:text-xs">
               Your data is securely stored in our Neon PostgreSQL database
             </p>
           </div>
