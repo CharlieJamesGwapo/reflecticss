@@ -1,0 +1,124 @@
+================================================================================
+  ACTION NOW - COPY & PASTE COMMANDS
+================================================================================
+
+YOUR CORRECTED CONNECTION STRING:
+  postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+================================================================================
+  STEP 1: UPDATE backend/.env
+================================================================================
+
+OPEN FILE:
+  backend/.env
+
+REPLACE THIS LINE:
+  DATABASE_URL=postgresql://localhost:5432/css_review
+
+WITH THIS:
+  DATABASE_URL=postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+SAVE:
+  Ctrl+S
+
+================================================================================
+  STEP 2: LOAD SCHEMA - COPY & PASTE THIS COMMAND
+================================================================================
+
+OPEN TERMINAL AND RUN:
+
+psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/schema.sql
+
+EXPECTED:
+  ✅ No errors
+  ✅ Command completes
+
+================================================================================
+  STEP 3: LOAD DATA - COPY & PASTE THIS COMMAND
+================================================================================
+
+RUN:
+
+psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/seed.sql
+
+EXPECTED:
+  ✅ No errors
+  ✅ Command completes
+
+================================================================================
+  STEP 4: START BACKEND - COPY & PASTE THESE COMMANDS
+================================================================================
+
+cd backend
+npm run dev
+
+EXPECTED OUTPUT:
+  Server running on port 5000
+
+TEST IN BROWSER:
+  http://localhost:5000/health
+  
+SHOULD SHOW:
+  {"status":"OK"}
+
+================================================================================
+  STEP 5: START FRONTEND - NEW TERMINAL
+================================================================================
+
+cd frontend
+npm start
+
+EXPECTED:
+  Browser opens to http://localhost:3000
+
+================================================================================
+  STEP 6: TEST APPLICATION
+================================================================================
+
+1. Register account
+2. Browse lessons
+3. Take a quiz
+4. Review flashcards
+5. Check dashboard
+
+================================================================================
+  TOTAL TIME: ~10 MINUTES
+================================================================================
+
+Step 1: 1 min (update .env)
+Step 2: 1 min (load schema)
+Step 3: 1 min (load data)
+Step 4: 2 min (start backend)
+Step 5: 2 min (start frontend)
+Step 6: 3 min (test)
+
+================================================================================
+  CHECKLIST
+================================================================================
+
+☐ Updated backend/.env
+☐ Saved backend/.env
+☐ Ran schema.sql command
+☐ Ran seed.sql command
+☐ Started backend (npm run dev)
+☐ Health check works
+☐ Started frontend (npm start)
+☐ Can register account
+☐ Can browse lessons
+☐ Can take quiz
+☐ Can review flashcards
+
+================================================================================
+  YOU'RE READY!
+================================================================================
+
+Everything is set up. Just follow the steps above and you'll have:
+
+✅ Neon database connected
+✅ Backend running
+✅ Frontend running
+✅ Full CSS Review Platform working
+
+START NOW! 🚀
+
+================================================================================

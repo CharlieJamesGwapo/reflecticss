@@ -1,0 +1,93 @@
+================================================================================
+  BACKEND vs FRONTEND - CORRECT COMMANDS
+================================================================================
+
+ISSUE:
+  You ran: npm run dev (in frontend folder)
+  Error: Missing script: "dev"
+
+REASON:
+  Frontend doesn't have "dev" script
+  Frontend uses "start" instead
+
+================================================================================
+  CORRECT COMMANDS
+================================================================================
+
+BACKEND (Port 5000):
+  cd backend
+  npm run dev
+
+FRONTEND (Port 3000):
+  cd frontend
+  npm start
+
+================================================================================
+  QUICK REFERENCE TABLE
+================================================================================
+
+┌──────────────┬─────────────────────────┬────────┐
+│ Component    │ Command                 │ Port   │
+├──────────────┼─────────────────────────┼────────┤
+│ Backend Dev  │ cd backend && npm run dev│ 5000   │
+│ Backend Prod │ cd backend && npm start  │ 5000   │
+│ Frontend Dev │ cd frontend && npm start │ 3000   │
+│ Frontend Bld │ cd frontend && npm build │ -      │
+└──────────────┴─────────────────────────┴────────┘
+
+================================================================================
+  WHAT YOU DID WRONG
+================================================================================
+
+❌ WRONG:
+  cd frontend
+  npm run dev
+
+✅ CORRECT:
+  cd frontend
+  npm start
+
+================================================================================
+  WHAT TO DO NOW
+================================================================================
+
+1. Press Ctrl+C to stop current process
+
+2. Run correct command:
+   npm start
+
+3. Wait for compilation:
+   Compiled successfully!
+
+4. Browser opens to:
+   http://localhost:3000
+
+5. Register and test!
+
+================================================================================
+  TERMINAL SETUP
+================================================================================
+
+Terminal 1 (Backend):
+  cd backend
+  npm run dev
+  ↓
+  Server running on port 5000
+
+Terminal 2 (Frontend):
+  cd frontend
+  npm start
+  ↓
+  Compiled successfully!
+  Local: http://localhost:3000
+
+================================================================================
+  SUMMARY
+================================================================================
+
+Backend: npm run dev
+Frontend: npm start
+
+Keep both running!
+
+================================================================================

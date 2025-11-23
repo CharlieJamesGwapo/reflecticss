@@ -1,0 +1,95 @@
+================================================================================
+  AUTOMATIC ENVIRONMENT SETUP
+================================================================================
+
+I'VE CREATED SCRIPTS TO SET UP YOUR .env FILES AUTOMATICALLY!
+
+================================================================================
+  WINDOWS USERS (PowerShell)
+================================================================================
+
+STEP 1: Open PowerShell in your project folder
+
+STEP 2: Run this command:
+  .\setup-env.ps1
+
+STEP 3: Press Enter
+
+✅ DONE! Both .env files created automatically!
+
+================================================================================
+  MAC / LINUX USERS (Bash)
+================================================================================
+
+STEP 1: Open Terminal in your project folder
+
+STEP 2: Make script executable:
+  chmod +x setup-env.sh
+
+STEP 3: Run the script:
+  ./setup-env.sh
+
+✅ DONE! Both .env files created automatically!
+
+================================================================================
+  WHAT GETS CREATED
+================================================================================
+
+backend/.env:
+  DATABASE_URL=postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+  JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_12345678
+  PORT=5000
+  NODE_ENV=development
+
+frontend/.env:
+  REACT_APP_API_URL=http://localhost:5000
+
+================================================================================
+  AFTER RUNNING SETUP SCRIPT
+================================================================================
+
+1. ✅ .env files created
+2. 👉 Load database schema
+3. 👉 Load sample data
+4. 👉 Start backend
+5. 👉 Start frontend
+
+See: SETUP_ENV_AUTO.md for detailed instructions
+
+================================================================================
+  NEXT COMMANDS TO RUN
+================================================================================
+
+LOAD SCHEMA:
+  psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/schema.sql
+
+LOAD DATA:
+  psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/seed.sql
+
+START BACKEND:
+  cd backend
+  npm run dev
+
+START FRONTEND (NEW TERMINAL):
+  cd frontend
+  npm start
+
+================================================================================
+  FILES CREATED
+================================================================================
+
+✅ setup-env.ps1 (Windows PowerShell script)
+✅ setup-env.sh (Mac/Linux Bash script)
+✅ SETUP_ENV_AUTO.md (Detailed instructions)
+✅ RUN_SETUP_NOW.txt (This file)
+
+================================================================================
+  RUN THE SCRIPT NOW!
+================================================================================
+
+Windows: .\setup-env.ps1
+Mac/Linux: ./setup-env.sh
+
+Then follow the next steps in SETUP_ENV_AUTO.md
+
+================================================================================

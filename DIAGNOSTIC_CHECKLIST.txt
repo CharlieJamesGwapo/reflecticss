@@ -1,0 +1,341 @@
+================================================================================
+  DIAGNOSTIC CHECKLIST - FIND THE EXACT ISSUE
+================================================================================
+
+Follow these steps to identify why Account Settings is showing an error.
+
+================================================================================
+  CHECK 1: IS BACKEND RUNNING? (CRITICAL)
+================================================================================
+
+Open terminal and run:
+
+  cd backend
+  npm run dev
+
+EXPECTED OUTPUT:
+  Server running on port 5000
+
+IF YOU SEE:
+  ✅ "Server running on port 5000" → Backend is running, continue to CHECK 2
+  ❌ Error message → Backend has an issue, see BACKEND ERRORS below
+  ❌ Nothing happens → Backend not installed, run: npm install
+
+RESULT: [ ] Backend Running  [ ] Backend Error  [ ] Backend Not Installed
+
+================================================================================
+  CHECK 2: FRONTEND .env FILE
+================================================================================
+
+Check if frontend/.env exists and has correct content:
+
+  cd frontend
+  cat .env
+
+EXPECTED OUTPUT:
+  REACT_APP_API_URL=http://localhost:5000
+
+IF YOU SEE:
+  ✅ REACT_APP_API_URL=http://localhost:5000 → Correct, continue to CHECK 3
+  ❌ Empty file → Add the line above
+  ❌ File not found → Create it with the line above
+
+HOW TO FIX:
+  cd frontend
+  echo "REACT_APP_API_URL=http://localhost:5000" > .env
+
+RESULT: [ ] .env Correct  [ ] .env Missing  [ ] .env Wrong
+
+================================================================================
+  CHECK 3: FRONTEND RUNNING?
+================================================================================
+
+Check if frontend is running:
+
+  cd frontend
+  npm start
+
+EXPECTED OUTPUT:
+  Compiled successfully
+
+IF YOU SEE:
+  ✅ "Compiled successfully" → Frontend is running, continue to CHECK 4
+  ❌ Error message → Frontend has an issue, see FRONTEND ERRORS below
+  ❌ Nothing happens → Frontend not installed, run: npm install
+
+RESULT: [ ] Frontend Running  [ ] Frontend Error  [ ] Frontend Not Installed
+
+================================================================================
+  CHECK 4: BROWSER CONSOLE
+================================================================================
+
+1. Go to http://localhost:3000
+2. Press F12 to open developer tools
+3. Go to Console tab
+4. Look for red error messages
+
+EXPECTED:
+  No red error messages
+
+IF YOU SEE:
+  ✅ No errors → Continue to CHECK 5
+  ❌ "Failed to fetch" → Backend not running (go back to CHECK 1)
+  ❌ "Cannot find module" → Run npm install
+  ❌ Other error → Note the error message
+
+RESULT: [ ] No Errors  [ ] Fetch Error  [ ] Module Error  [ ] Other Error
+
+================================================================================
+  CHECK 5: BACKEND .env FILE
+================================================================================
+
+Check if backend/.env has all required credentials:
+
+  cd backend
+  cat .env
+
+EXPECTED TO SEE:
+  DATABASE_URL=postgresql://...
+  JWT_SECRET=your_secret
+  PORT=5000
+  CLOUDINARY_CLOUD_NAME=dtr1tnutd
+  CLOUDINARY_API_KEY=188541131823779
+  CLOUDINARY_API_SECRET=4FfRmKI0JfxoHC8xOwWlkCbuOH4
+
+IF MISSING:
+  Add the missing lines to backend/.env
+
+RESULT: [ ] All Present  [ ] Some Missing  [ ] All Missing
+
+================================================================================
+  CHECK 6: DATABASE NOTIFICATIONS TABLE
+================================================================================
+
+Check if notifications table exists in Neon:
+
+1. Go to Neon console
+2. Open SQL Editor
+3. Run this query:
+
+  SELECT * FROM notifications LIMIT 1;
+
+EXPECTED:
+  Table exists (even if empty)
+
+IF YOU SEE:
+  ✅ Table exists → Continue to CHECK 7
+  ❌ "relation 'notifications' does not exist" → Create table:
+
+  CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255),
+    message TEXT,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+
+RESULT: [ ] Table Exists  [ ] Table Missing  [ ] Database Error
+
+================================================================================
+  CHECK 7: TEST API DIRECTLY
+================================================================================
+
+1. Go to http://localhost:3000
+2. Press F12 to open developer tools
+3. Go to Console tab
+4. Run this command:
+
+  fetch('http://localhost:5000/health')
+    .then(r => r.json())
+    .then(d => console.log(d))
+
+EXPECTED OUTPUT:
+  {status: "OK"}
+
+IF YOU SEE:
+  ✅ {status: "OK"} → API is working, continue to CHECK 8
+  ❌ Error → Backend not running or CORS issue
+
+RESULT: [ ] API Working  [ ] API Not Responding  [ ] CORS Error
+
+================================================================================
+  CHECK 8: TEST LOGIN
+================================================================================
+
+1. Go to http://localhost:3000
+2. Login with your account
+3. Check if you're logged in
+
+EXPECTED:
+  Dashboard loads, you see your name in navbar
+
+IF YOU SEE:
+  ✅ Dashboard loads → Continue to CHECK 9
+  ❌ Login error → Check backend logs
+  ❌ Stays on login page → Check browser console
+
+RESULT: [ ] Login Works  [ ] Login Error  [ ] Other Issue
+
+================================================================================
+  CHECK 9: TEST ACCOUNT SETTINGS
+================================================================================
+
+1. Click on your profile dropdown (top right)
+2. Click "Account Settings"
+3. Check if page loads
+
+EXPECTED:
+  Account Settings page loads without error
+
+IF YOU SEE:
+  ✅ Page loads, no error → Continue to CHECK 10
+  ❌ "Something went wrong!" → Check browser console for specific error
+  ❌ Page doesn't load → Check backend logs
+
+RESULT: [ ] Page Loads  [ ] Error Message  [ ] Page Not Loading
+
+================================================================================
+  CHECK 10: TEST PROFILE UPDATE
+================================================================================
+
+1. On Account Settings page
+2. Change your name or email
+3. Click "Save Changes"
+4. Check if it saves
+
+EXPECTED:
+  Success message appears, profile updates
+
+IF YOU SEE:
+  ✅ Success message → System is working! 🎉
+  ❌ Error message → Note the error and see COMMON ERRORS below
+  ❌ Nothing happens → Check browser console
+
+RESULT: [ ] Update Works  [ ] Update Error  [ ] No Response
+
+================================================================================
+  COMMON ERRORS & SOLUTIONS
+================================================================================
+
+ERROR: "Failed to fetch"
+  CAUSE: Backend not running
+  FIX: cd backend && npm run dev
+
+ERROR: "Cannot find module 'cloudinary'"
+  CAUSE: Packages not installed
+  FIX: cd backend && npm install cloudinary multer multer-storage-cloudinary
+
+ERROR: "Port 5000 already in use"
+  CAUSE: Another process using port 5000
+  FIX: Kill the process or use different port
+
+ERROR: "relation 'notifications' does not exist"
+  CAUSE: Database table not created
+  FIX: Run SQL to create table (see CHECK 6)
+
+ERROR: "Current password is incorrect"
+  CAUSE: Wrong password entered
+  FIX: Verify password is correct
+
+ERROR: "CORS error"
+  CAUSE: Frontend and backend not communicating
+  FIX: Check API URL in frontend/.env
+
+ERROR: "Invalid token"
+  CAUSE: Token expired or invalid
+  FIX: Login again
+
+================================================================================
+  BACKEND ERRORS
+================================================================================
+
+If backend shows errors, check:
+
+1. Node.js installed?
+   node --version
+
+2. Packages installed?
+   cd backend
+   npm install
+
+3. .env file correct?
+   cat .env
+   Should have DATABASE_URL, JWT_SECRET, CLOUDINARY credentials
+
+4. Database connected?
+   Check DATABASE_URL in .env
+
+5. Port 5000 free?
+   netstat -ano | findstr :5000
+
+6. Restart backend
+   npm run dev
+
+================================================================================
+  FRONTEND ERRORS
+================================================================================
+
+If frontend shows errors, check:
+
+1. Node.js installed?
+   node --version
+
+2. Packages installed?
+   cd frontend
+   npm install
+
+3. .env file correct?
+   cat .env
+   Should have REACT_APP_API_URL=http://localhost:5000
+
+4. Port 3000 free?
+   netstat -ano | findstr :3000
+
+5. Clear cache
+   Ctrl+Shift+Delete → Clear all
+
+6. Restart frontend
+   npm start
+
+================================================================================
+  FINAL CHECKLIST
+================================================================================
+
+Before declaring "FIXED":
+
+- [ ] Backend running (npm run dev)
+- [ ] Frontend running (npm start)
+- [ ] frontend/.env has API URL
+- [ ] backend/.env has all credentials
+- [ ] Notifications table created
+- [ ] Browser cache cleared
+- [ ] Login works
+- [ ] Account Settings loads
+- [ ] Profile update works
+- [ ] Password change works
+- [ ] No errors in console
+- [ ] No errors in backend logs
+
+If all checked: SYSTEM IS FULLY FUNCTIONAL ✅
+
+================================================================================
+  SUMMARY
+================================================================================
+
+If you see "Something went wrong!" error:
+
+1. CHECK 1: Is backend running? (MOST COMMON ISSUE)
+2. CHECK 2: Is frontend/.env correct?
+3. CHECK 3: Is frontend running?
+4. CHECK 4: Check browser console
+5. CHECK 5: Is backend/.env correct?
+6. CHECK 6: Does database table exist?
+7. CHECK 7: Can you reach the API?
+8. CHECK 8: Can you login?
+9. CHECK 9: Does Account Settings load?
+10. CHECK 10: Can you update profile?
+
+Follow these steps in order to find the exact issue.
+
+================================================================================

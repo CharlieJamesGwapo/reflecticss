@@ -1,0 +1,175 @@
+================================================================================
+  HOW TO RUN PROJECTS - QUICK REFERENCE
+================================================================================
+
+COMPLETE WORKFLOW:
+
+================================================================================
+  STEP 1: SETUP ENVIRONMENT (One Time)
+================================================================================
+
+WINDOWS (PowerShell):
+  .\setup-env.ps1
+
+MAC/LINUX (Bash):
+  chmod +x setup-env.sh
+  ./setup-env.sh
+
+This creates: backend/.env and frontend/.env
+
+================================================================================
+  STEP 2: LOAD DATABASE (One Time)
+================================================================================
+
+LOAD SCHEMA:
+  psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/schema.sql
+
+LOAD DATA:
+  psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/seed.sql
+
+================================================================================
+  STEP 3: START BACKEND (Terminal 1)
+================================================================================
+
+cd backend
+npm install  (First time only)
+npm run dev
+
+EXPECTED OUTPUT:
+  Server running on port 5000
+
+KEEP THIS TERMINAL OPEN!
+
+================================================================================
+  STEP 4: START FRONTEND (Terminal 2 - NEW)
+================================================================================
+
+cd frontend
+npm install  (First time only)
+npm start
+
+EXPECTED OUTPUT:
+  Compiled successfully!
+  Local: http://localhost:3000
+
+KEEP THIS TERMINAL OPEN!
+
+================================================================================
+  STEP 5: ACCESS APPLICATION
+================================================================================
+
+FRONTEND:
+  http://localhost:3000
+
+BACKEND API:
+  http://localhost:5000
+
+HEALTH CHECK:
+  http://localhost:5000/health
+  Should show: {"status":"OK"}
+
+================================================================================
+  TERMINAL SETUP
+================================================================================
+
+YOU NEED 2 TERMINALS OPEN AT THE SAME TIME:
+
+Terminal 1 (Backend):
+  cd backend
+  npm run dev
+  Port: 5000
+
+Terminal 2 (Frontend):
+  cd frontend
+  npm start
+  Port: 3000
+
+================================================================================
+  QUICK COMMANDS
+================================================================================
+
+Setup environment:
+  Windows: .\setup-env.ps1
+  Mac/Linux: ./setup-env.sh
+
+Load schema:
+  psql '...' -f backend/database/schema.sql
+
+Load data:
+  psql '...' -f backend/database/seed.sql
+
+Start backend:
+  cd backend && npm run dev
+
+Start frontend:
+  cd frontend && npm start
+
+Stop servers:
+  Ctrl+C (in each terminal)
+
+================================================================================
+  TESTING
+================================================================================
+
+1. Register account:
+   - Visit http://localhost:3000
+   - Click Login → Register
+   - Fill in email, password, name
+   - Click Register
+
+2. Test features:
+   - Browse lessons
+   - Take a quiz
+   - Review flashcards
+   - Check dashboard
+
+================================================================================
+  TROUBLESHOOTING
+================================================================================
+
+Backend won't start:
+  → Check DATABASE_URL in backend/.env
+  → Verify Neon connection string
+  → Check internet connection
+
+Frontend won't start:
+  → Check if port 3000 is in use
+  → Try: PORT=3001 npm start
+  → Check REACT_APP_API_URL in frontend/.env
+
+Can't connect to backend:
+  → Verify backend is running
+  → Check backend terminal for errors
+  → Verify http://localhost:5000/health works
+
+Database connection fails:
+  → Verify connection string in backend/.env
+  → Check Neon project is active
+  → Verify internet connection
+
+================================================================================
+  DETAILED GUIDE
+================================================================================
+
+For more details, see: HOW_TO_RUN_PROJECTS.md
+
+Contains:
+  • Step-by-step instructions
+  • Detailed troubleshooting
+  • Pro tips
+  • File locations
+  • Complete workflow
+
+================================================================================
+  SUMMARY
+================================================================================
+
+1. Setup environment: .\setup-env.ps1
+2. Load database: psql commands
+3. Start backend: cd backend && npm run dev
+4. Start frontend: cd frontend && npm start
+5. Visit: http://localhost:3000
+
+KEEP BOTH TERMINALS OPEN!
+
+================================================================================

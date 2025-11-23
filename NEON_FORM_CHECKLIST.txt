@@ -1,0 +1,158 @@
+================================================================================
+  NEON PROJECT CREATION FORM - QUICK CHECKLIST
+================================================================================
+
+FILL OUT THE FORM WITH THESE VALUES:
+
+┌─────────────────────────────────────────────────────────────────┐
+│ FIELD                          │ VALUE                          │
+├─────────────────────────────────────────────────────────────────┤
+│ Project name                   │ css-review                     │
+│ Postgres version               │ 17 (or 18)                     │
+│ Cloud service provider         │ AWS                            │
+│ Region                         │ [Your closest region]          │
+│ Enable Neon Auth               │ UNCHECKED (leave disabled)     │
+└─────────────────────────────────────────────────────────────────┘
+
+================================================================================
+  REGION SELECTION
+================================================================================
+
+Choose the region CLOSEST to you:
+
+USA:
+  ☐ AWS US East 1 (N. Virginia) - Default, good for East Coast
+  ☐ AWS US East 2 (Ohio) - Good for Central USA
+  ☐ AWS US West 2 (Oregon) - Good for West Coast
+
+ASIA:
+  ☐ AWS Asia Pacific 1 (Singapore) - Good for Southeast Asia
+  ☐ AWS Asia Pacific 2 (Sydney) - Good for Australia/Oceania
+
+EUROPE:
+  ☐ AWS Europe Central 1 (Frankfurt) - Good for Central Europe
+  ☐ AWS Europe West 2 (London) - Good for UK/Western Europe
+
+SOUTH AMERICA:
+  ☐ AWS South America East 1 (São Paulo) - Good for Brazil
+
+================================================================================
+  STEP-BY-STEP FORM FILLING
+================================================================================
+
+STEP 1: Project Name
+  1. Click on "Project name" field
+  2. Clear existing text
+  3. Type: css-review
+  4. ✅ Done
+
+STEP 2: PostgreSQL Version
+  1. Look for "Postgres version" section
+  2. Click on: 17 (or 18)
+  3. ✅ Done
+
+STEP 3: Cloud Provider
+  1. Look for "Cloud service provider" section
+  2. Click on: AWS
+  3. ✅ Done
+
+STEP 4: Region
+  1. Click on Region dropdown
+  2. Select your closest region
+  3. ✅ Done
+
+STEP 5: Neon Auth
+  1. Look for "Enable Neon Auth" checkbox
+  2. Make sure it's UNCHECKED
+  3. ✅ Done
+
+STEP 6: Create
+  1. Click "Create Project" button
+  2. Wait for creation (< 1 minute)
+  3. ✅ Done
+
+================================================================================
+  VERIFICATION CHECKLIST
+================================================================================
+
+Before clicking "Create Project", verify:
+
+  ☐ Project name = "css-review"
+  ☐ PostgreSQL version = 17 or 18
+  ☐ Cloud provider = AWS
+  ☐ Region = Your closest location
+  ☐ Neon Auth = UNCHECKED
+
+If all checked, click "Create Project"!
+
+================================================================================
+  AFTER PROJECT CREATION
+================================================================================
+
+You will see:
+  1. Success message
+  2. Connection string displayed
+  3. Database details
+
+IMPORTANT:
+  ✅ Copy the connection string
+  ✅ Save it somewhere safe
+  ✅ You'll need it for backend setup
+
+Connection string format:
+  postgresql://user:password@host.neon.tech/database?sslmode=require
+
+================================================================================
+  COMMON MISTAKES TO AVOID
+================================================================================
+
+❌ WRONG: Project name = "CSS Review"
+✅ RIGHT: Project name = "css-review"
+
+❌ WRONG: PostgreSQL version = 14 or 15
+✅ RIGHT: PostgreSQL version = 17 or 18
+
+❌ WRONG: Cloud provider = Azure or Google Cloud
+✅ RIGHT: Cloud provider = AWS
+
+❌ WRONG: Region = Far away from you
+✅ RIGHT: Region = Closest to you
+
+❌ WRONG: Neon Auth = CHECKED
+✅ RIGHT: Neon Auth = UNCHECKED
+
+================================================================================
+  NEXT STEPS
+================================================================================
+
+After creating project:
+
+1. ✅ Copy connection string
+2. ✅ Save it safely
+3. 👉 Open backend/.env
+4. 👉 Update DATABASE_URL
+5. 👉 Load schema and data
+6. 👉 Start servers
+
+See: NEON_SETUP.md Step 4 for next steps
+
+================================================================================
+  QUICK REFERENCE
+================================================================================
+
+Project name:      css-review
+Postgres version:  17
+Cloud provider:    AWS
+Region:            Your closest
+Neon Auth:         UNCHECKED
+
+================================================================================
+  HELP
+================================================================================
+
+For more details:
+  • NEON_FORM_GUIDE.md - Complete form guide
+  • NEON_SETUP.md - Full setup guide
+  • NEON_STEP_BY_STEP.md - Visual walkthrough
+
+================================================================================

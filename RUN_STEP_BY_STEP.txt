@@ -1,0 +1,333 @@
+================================================================================
+  HOW TO RUN PROJECTS - STEP BY STEP VISUAL GUIDE
+================================================================================
+
+COMPLETE VISUAL WALKTHROUGH:
+
+================================================================================
+  STEP 1: SETUP ENVIRONMENT VARIABLES (5 minutes)
+================================================================================
+
+WINDOWS USERS:
+
+  1. Open PowerShell
+  2. Navigate to project folder
+  3. Run command:
+     .\setup-env.ps1
+  4. Wait for completion
+  5. You should see:
+     ✅ backend/.env created
+     ✅ frontend/.env created
+
+MAC/LINUX USERS:
+
+  1. Open Terminal
+  2. Navigate to project folder
+  3. Run commands:
+     chmod +x setup-env.sh
+     ./setup-env.sh
+  4. Wait for completion
+  5. You should see:
+     ✅ backend/.env created
+     ✅ frontend/.env created
+
+================================================================================
+  STEP 2: LOAD DATABASE SCHEMA (2 minutes)
+================================================================================
+
+OPEN TERMINAL:
+  1. Open new terminal/command prompt
+  2. Navigate to project folder
+
+RUN COMMAND:
+  psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/schema.sql
+
+WHAT HAPPENS:
+  • Creates all database tables
+  • Sets up relationships
+  • Creates indexes
+  • Takes < 30 seconds
+
+SUCCESS INDICATOR:
+  ✅ No error messages
+  ✅ Command completes
+
+================================================================================
+  STEP 3: LOAD SAMPLE DATA (2 minutes)
+================================================================================
+
+RUN COMMAND:
+  psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/seed.sql
+
+WHAT HAPPENS:
+  • Loads 6 lessons
+  • Loads 3 quizzes
+  • Loads 8 flashcards
+  • Takes < 10 seconds
+
+SUCCESS INDICATOR:
+  ✅ No error messages
+  ✅ Command completes
+
+================================================================================
+  STEP 4: START BACKEND SERVER (5 minutes)
+================================================================================
+
+OPEN NEW TERMINAL (Terminal 1):
+
+NAVIGATE TO BACKEND:
+  cd backend
+
+INSTALL DEPENDENCIES (First time only):
+  npm install
+
+  This downloads and installs all required packages
+  Takes 1-2 minutes
+
+START SERVER:
+  npm run dev
+
+EXPECTED OUTPUT:
+  Server running on port 5000
+
+SUCCESS INDICATORS:
+  ✅ Server running on port 5000
+  ✅ No error messages
+  ✅ Terminal is waiting for input
+
+KEEP THIS TERMINAL OPEN!
+  Don't close it while using the app!
+
+================================================================================
+  STEP 5: START FRONTEND APPLICATION (5 minutes)
+================================================================================
+
+OPEN NEW TERMINAL (Terminal 2):
+  Don't close Terminal 1!
+
+NAVIGATE TO FRONTEND:
+  cd frontend
+
+INSTALL DEPENDENCIES (First time only):
+  npm install
+
+  This downloads and installs all required packages
+  Takes 1-2 minutes
+
+START APPLICATION:
+  npm start
+
+EXPECTED OUTPUT:
+  Compiled successfully!
+
+  You can now view quizlet in the browser.
+
+    Local:            http://localhost:3000
+    On Your Network:  http://192.168.x.x:3000
+
+BROWSER OPENS AUTOMATICALLY:
+  http://localhost:3000
+
+SUCCESS INDICATORS:
+  ✅ Browser opens to http://localhost:3000
+  ✅ You see the CSS Review Platform
+  ✅ No error messages
+  ✅ Terminal is waiting for input
+
+KEEP THIS TERMINAL OPEN!
+  Don't close it while using the app!
+
+================================================================================
+  STEP 6: TEST THE APPLICATION (5 minutes)
+================================================================================
+
+REGISTER ACCOUNT:
+
+  1. Visit: http://localhost:3000
+  2. Click "Login" button
+  3. Click "Register" link
+  4. Fill in form:
+     Email: test@example.com
+     Password: password123
+     Name: Test User
+  5. Click "Register"
+  6. You should be logged in
+
+TEST FEATURES:
+
+  Dashboard:
+    ✅ See statistics
+    ✅ See feature cards
+    ✅ Navigation works
+
+  Lessons:
+    ✅ See 6 lessons
+    ✅ Click on a lesson
+    ✅ Read content
+    ✅ Mark complete
+
+  Quizzes:
+    ✅ See 3 quizzes
+    ✅ Click on a quiz
+    ✅ Answer questions
+    ✅ Submit quiz
+    ✅ See results
+
+  Flashcards:
+    ✅ See 8 flashcards
+    ✅ Click to flip
+    ✅ Navigate with buttons
+    ✅ Shuffle cards
+
+================================================================================
+  TERMINAL SETUP DIAGRAM
+================================================================================
+
+Your screen should look like:
+
+┌─────────────────────────────────────────────────────────────┐
+│ Terminal 1: Backend                                         │
+│ ─────────────────────────────────────────────────────────── │
+│ $ cd backend                                                │
+│ $ npm run dev                                               │
+│ Server running on port 5000                                 │
+│                                                             │
+│ (Keep this open!)                                           │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ Terminal 2: Frontend                                        │
+│ ─────────────────────────────────────────────────────────── │
+│ $ cd frontend                                               │
+│ $ npm start                                                 │
+│ Compiled successfully!                                      │
+│ Local: http://localhost:3000                                │
+│                                                             │
+│ (Keep this open!)                                           │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ Browser Window                                              │
+│ ─────────────────────────────────────────────────────────── │
+│ http://localhost:3000                                       │
+│                                                             │
+│ CSS Review Platform                                         │
+│ [Dashboard] [Lessons] [Quizzes] [Flashcards]               │
+│                                                             │
+│ (Your app is running here!)                                 │
+└─────────────────────────────────────────────────────────────┘
+
+================================================================================
+  QUICK REFERENCE
+================================================================================
+
+Setup environment:
+  Windows: .\setup-env.ps1
+  Mac/Linux: ./setup-env.sh
+
+Load schema:
+  psql '...' -f backend/database/schema.sql
+
+Load data:
+  psql '...' -f backend/database/seed.sql
+
+Start backend (Terminal 1):
+  cd backend
+  npm install  (first time only)
+  npm run dev
+
+Start frontend (Terminal 2):
+  cd frontend
+  npm install  (first time only)
+  npm start
+
+Access application:
+  http://localhost:3000
+
+Stop servers:
+  Ctrl+C (in each terminal)
+
+================================================================================
+  TOTAL TIME
+================================================================================
+
+Step 1: Setup environment     5 minutes
+Step 2: Load schema           2 minutes
+Step 3: Load data             2 minutes
+Step 4: Start backend         5 minutes
+Step 5: Start frontend        5 minutes
+Step 6: Test application      5 minutes
+─────────────────────────────────────
+TOTAL:                       ~24 minutes
+
+(Faster on subsequent runs!)
+
+================================================================================
+  TROUBLESHOOTING
+================================================================================
+
+ISSUE: Backend won't start
+  Error: Error: connect ECONNREFUSED
+  Solution:
+    1. Check DATABASE_URL in backend/.env
+    2. Verify Neon connection string
+    3. Check internet connection
+    4. Verify Neon project is active
+
+ISSUE: Frontend won't start
+  Error: Port 3000 is already in use
+  Solution:
+    1. Kill process on port 3000
+    2. Or use: PORT=3001 npm start
+    3. Update frontend/.env if needed
+
+ISSUE: Can't connect to backend
+  Error: Failed to fetch from http://localhost:5000
+  Solution:
+    1. Verify backend is running
+    2. Check backend terminal for errors
+    3. Verify REACT_APP_API_URL in frontend/.env
+
+ISSUE: Database connection fails
+  Error: Error: connect ECONNREFUSED
+  Solution:
+    1. Verify connection string in backend/.env
+    2. Check Neon project is active
+    3. Verify internet connection
+
+================================================================================
+  NEXT TIME (Faster!)
+================================================================================
+
+You only need to do Steps 4-6:
+
+1. Start backend:
+   cd backend
+   npm run dev
+
+2. Start frontend:
+   cd frontend
+   npm start
+
+3. Visit: http://localhost:3000
+
+Takes only ~10 minutes!
+
+================================================================================
+  SUMMARY
+================================================================================
+
+6 Steps to run the CSS Review Platform:
+
+1. ✅ Setup environment variables
+2. ✅ Load database schema
+3. ✅ Load sample data
+4. ✅ Start backend server
+5. ✅ Start frontend application
+6. ✅ Test the application
+
+KEEP BOTH TERMINALS OPEN!
+
+Ready? Start with Step 1! 🚀
+
+================================================================================

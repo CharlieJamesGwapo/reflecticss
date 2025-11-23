@@ -1,0 +1,86 @@
+================================================================================
+  QUICK FIX - YOUR CONNECTION STRING
+================================================================================
+
+YOUR CONNECTION STRING:
+  postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+
+PROBLEM:
+  ❌ Has &channel_binding=require at the end
+  ❌ This can cause connection issues
+
+SOLUTION:
+  ✅ Remove &channel_binding=require
+  ✅ Use only ?sslmode=require
+
+================================================================================
+  CORRECTED CONNECTION STRING
+================================================================================
+
+USE THIS:
+  postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+COPY AND PASTE THIS ☝️
+
+================================================================================
+  3 QUICK STEPS
+================================================================================
+
+STEP 1: Update backend/.env
+  1. Open: backend/.env
+  2. Find: DATABASE_URL=postgresql://localhost:5432/css_review
+  3. Replace with: DATABASE_URL=postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+  4. Save: Ctrl+S
+
+STEP 2: Load Schema
+  Run: psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/schema.sql
+
+STEP 3: Load Data
+  Run: psql 'postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require' -f backend/database/seed.sql
+
+================================================================================
+  THEN START BACKEND
+================================================================================
+
+TERMINAL:
+  cd backend
+  npm run dev
+
+EXPECTED OUTPUT:
+  Server running on port 5000
+
+TEST:
+  http://localhost:3000/health
+  Should show: {"status":"OK"}
+
+================================================================================
+  THEN START FRONTEND
+================================================================================
+
+NEW TERMINAL:
+  cd frontend
+  npm start
+
+VISIT:
+  http://localhost:3000
+
+REGISTER AND TEST!
+
+================================================================================
+  SUMMARY
+================================================================================
+
+CONNECTION STRING (CORRECTED):
+  postgresql://neondb_owner:npg_r5ZaRum4Adyv@ep-dawn-tree-ad22t6vc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+WHAT TO DO:
+  1. Update backend/.env
+  2. Run schema.sql
+  3. Run seed.sql
+  4. Start backend
+  5. Start frontend
+  6. Test!
+
+TIME: ~10 minutes
+
+================================================================================

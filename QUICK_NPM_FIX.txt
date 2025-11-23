@@ -1,0 +1,58 @@
+================================================================================
+  QUICK NPM FIX
+================================================================================
+
+ISSUE:
+  npm error notarget No matching version found for jsonwebtoken@^9.1.2
+
+CAUSE:
+  Invalid version in package.json
+
+SOLUTION:
+  ✅ Already fixed in backend/package.json
+  Changed: jsonwebtoken@^9.1.2 → jsonwebtoken@^9.0.2
+
+================================================================================
+  WHAT TO DO NOW
+================================================================================
+
+STEP 1: Clear npm Cache
+  npm cache clean --force
+
+STEP 2: Delete Old Files (Optional but Recommended)
+  Windows:
+    rmdir /s /q node_modules
+    del package-lock.json
+
+  Mac/Linux:
+    rm -rf node_modules
+    rm package-lock.json
+
+STEP 3: Reinstall Dependencies
+  npm install
+
+EXPECTED OUTPUT:
+  added 123 packages in 45s
+
+================================================================================
+  THEN START BACKEND
+================================================================================
+
+cd backend
+npm run dev
+
+EXPECTED OUTPUT:
+  Server running on port 5000
+
+================================================================================
+  SUMMARY
+================================================================================
+
+1. Clear cache: npm cache clean --force
+2. Delete node_modules and package-lock.json
+3. Reinstall: npm install
+4. Start: npm run dev
+
+That's it! 🚀
+
+================================================================================
