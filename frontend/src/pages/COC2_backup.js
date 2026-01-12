@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 function COC2() {
   const [activeTab, setActiveTab] = useState('quiz');
   const [questions, setQuestions] = useState([]);
-  const [categories, setCategories] = useState(['Network Topology', 'Network Configuration', 'Network Location Types', 'Network Sharing', 'Network Security']);
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -15,82 +15,79 @@ function COC2() {
   const [timeLeft, setTimeLeft] = useState(20);
   const [quizStarted, setQuizStarted] = useState(false);
 
-  // Sample questions for demonstration
-  const sampleQuestions = [
-    {
-      id: 1,
-      question_text: 'Your teacher asks class to redesign computer lab, focusing on how devices are arranged and connected. What concept are you being asked to work on?',
-      category: 'Network Topology',
-      question_number: 1,
-      choices: [
-        { id: 1, choice_text: 'Network Security', is_correct: false },
-        { id: 2, choice_text: 'Network Topology', is_correct: true },
-        { id: 3, choice_text: 'Printer Sharing', is_correct: false },
-        { id: 4, choice_text: 'IP Address', is_correct: false }
-      ]
-    },
-    {
-      id: 2,
-      question_text: 'In a small shop, all computers are connected to a single main cable. When cable is damaged, whole network stops working. What topology is this?',
-      category: 'Network Topology',
-      question_number: 2,
-      choices: [
-        { id: 5, choice_text: 'Mesh', is_correct: false },
-        { id: 6, choice_text: 'Bus', is_correct: true },
-        { id: 7, choice_text: 'Star', is_correct: false },
-        { id: 8, choice_text: 'Hybrid', is_correct: false }
-      ]
-    },
-    {
-      id: 3,
-      question_text: 'A company uses a network where each device passes message to the next one in a circular path. What topology is being used?',
-      category: 'Network Topology',
-      question_number: 3,
-      choices: [
-        { id: 9, choice_text: 'Ring', is_correct: true },
-        { id: 10, choice_text: 'Star', is_correct: false },
-        { id: 11, choice_text: 'Tree', is_correct: false },
-        { id: 12, choice_text: 'Bus', is_correct: false }
-      ]
-    },
-    {
-      id: 4,
-      question_text: 'A school network uses a central switch to connect all computers. If switch fails, all computers lose connection. What topology is this?',
-      category: 'Network Topology',
-      question_number: 4,
-      choices: [
-        { id: 13, choice_text: 'Mesh', is_correct: false },
-        { id: 14, choice_text: 'Star', is_correct: true },
-        { id: 15, choice_text: 'Hybrid', is_correct: false },
-        { id: 16, choice_text: 'Tree', is_correct: false }
-      ]
-    },
-    {
-      id: 5,
-      question_text: 'In a military base, each device is connected to many other devices to ensure communication continues even if one path fails. What topology is this?',
-      category: 'Network Topology',
-      question_number: 5,
-      choices: [
-        { id: 17, choice_text: 'Mesh', is_correct: true },
-        { id: 18, choice_text: 'Ring', is_correct: false },
-        { id: 19, choice_text: 'Bus', is_correct: false },
-        { id: 20, choice_text: 'LAN', is_correct: false }
-      ]
-    }
-  ];
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-  // Filter questions by category
-  const filteredQuestions = selectedCategory 
-    ? sampleQuestions.filter(q => q.category === selectedCategory)
-    : sampleQuestions;
+  // Fetch categories on mount
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/coc2/categories`);
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      const data = await response.json();
+      setCategories(data || []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  // Fetch quiz questions only when quiz is started
+  const fetchQuestions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const url = selectedCategory
+        ? `${API_URL}/api/coc2/quiz/questions?category=${encodeURIComponent(selectedCategory)}`
+        : `${API_URL}/api/coc2/quiz/questions`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch questions');
+      let data = await response.json();
+      
+      // Fetch choices for each question
+      const questionsWithChoices = await Promise.all(
+        data.map(async (question) => {
+          try {
+            const choicesResponse = await fetch(`${API_URL}/api/coc2/quiz/questions/${question.id}`);
+            if (choicesResponse.ok) {
+              const questionData = await choicesResponse.json();
+              return { ...question, choices: questionData.choices || [] };
+            }
+            return { ...question, choices: [] };
+          } catch (err) {
+            console.error('Error fetching choices for question:', question.id, err);
+            return { ...question, choices: [] };
+          }
+        })
+      );
+      
+      setQuestions(questionsWithChoices || []);
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setShowResult(false);
+      setQuizStats({ correct: 0, total: 0 });
+      setTimeLeft(20);
+    } catch (err) {
+      console.error('Error fetching questions:', err);
+      setQuestions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCategory, API_URL]);
+
+  useEffect(() => {
+    if (activeTab === 'quiz' && quizStarted) {
+      fetchQuestions();
+    }
+  }, [activeTab, quizStarted, fetchQuestions]);
 
   // Handle submit answer
   const handleSubmitAnswer = useCallback(() => {
-    if (!selectedAnswer || !filteredQuestions[currentQuestionIndex]) {
+    if (!selectedAnswer || !questions[currentQuestionIndex]) {
       return;
     }
 
-    const currentQ = filteredQuestions[currentQuestionIndex];
+    const currentQ = questions[currentQuestionIndex];
     const correctChoice = currentQ.choices?.find(c => c.is_correct);
     const isCorrect = selectedAnswer === correctChoice?.id;
 
@@ -102,7 +99,7 @@ function COC2() {
 
     // Move to next question after delay
     setTimeout(() => {
-      if (currentQuestionIndex < filteredQuestions.length - 1) {
+      if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
         setSelectedAnswer(null);
         setShowResult(false);
@@ -112,11 +109,11 @@ function COC2() {
         handleQuizComplete();
       }
     }, 1500);
-  }, [selectedAnswer, filteredQuestions, currentQuestionIndex]);
+  }, [selectedAnswer, questions, currentQuestionIndex]);
 
   // Handle quiz complete
   const handleQuizComplete = async () => {
-    const percentage = Math.round((quizStats.correct / filteredQuestions.length) * 100);
+    const percentage = Math.round((quizStats.correct / questions.length) * 100);
     let title, icon, color;
     
     if (percentage >= 80) {
@@ -138,7 +135,7 @@ function COC2() {
       title,
       html: `
         <div class="text-center">
-          <p class="text-2xl font-bold mb-2">${quizStats.correct}/${filteredQuestions.length}</p>
+          <p class="text-2xl font-bold mb-2">${quizStats.correct}/${questions.length}</p>
           <p class="text-lg">${percentage}% Score</p>
           <div class="mt-4">
             <div class="w-full bg-gray-200 rounded-full h-4">
@@ -154,8 +151,7 @@ function COC2() {
     }).then((result) => {
       if (result.isConfirmed) {
         setQuizStarted(false);
-        setCurrentQuestionIndex(0);
-        setQuizStats({ correct: 0, total: 0 });
+        fetchQuestions();
       } else {
         setQuizStarted(false);
         setCurrentQuestionIndex(0);
@@ -166,7 +162,7 @@ function COC2() {
 
   // Timer effect
   useEffect(() => {
-    if (quizStarted && filteredQuestions.length > 0 && !showResult) {
+    if (quizStarted && questions.length > 0 && !showResult) {
       const timer = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
@@ -179,18 +175,14 @@ function COC2() {
 
       return () => clearInterval(timer);
     }
-  }, [quizStarted, filteredQuestions, showResult, handleSubmitAnswer]);
+  }, [quizStarted, questions, showResult, handleSubmitAnswer]);
 
   // Start quiz
   const startQuiz = () => {
     setQuizStarted(true);
-    setQuestions(filteredQuestions);
-    setCurrentQuestionIndex(0);
-    setQuizStats({ correct: 0, total: 0 });
-    setTimeLeft(20);
   };
 
-  const currentQuestion = filteredQuestions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
@@ -279,13 +271,13 @@ function COC2() {
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-4 text-gray-600">Loading questions...</p>
                 </div>
-              ) : filteredQuestions.length > 0 && currentQuestion ? (
+              ) : questions.length > 0 && currentQuestion ? (
                 <div className="max-w-4xl mx-auto">
                   {/* Progress Bar */}
                   <div className="mb-6">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium text-gray-700">
-                        Question {currentQuestionIndex + 1} of {filteredQuestions.length}
+                        Question {currentQuestionIndex + 1} of {questions.length}
                       </span>
                       <div className="flex items-center gap-2">
                         <Clock size={16} className="text-gray-500" />
@@ -297,7 +289,7 @@ function COC2() {
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div 
                         className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentQuestionIndex + 1) / filteredQuestions.length) * 100}%` }}
+                        style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
                       ></div>
                     </div>
                   </div>

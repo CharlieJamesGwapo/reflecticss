@@ -49,8 +49,10 @@ function Reviewer() {
   };
 
   const filteredTerms = terms.filter(term => {
-    const matchesSearch = term.term_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         term.definition.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (term.term && term.term.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (term.definitions && term.definitions.some(def => 
+                           def.definition && def.definition.toLowerCase().includes(searchTerm.toLowerCase())
+                         ));
     const matchesCategory = !selectedCategory || term.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -177,7 +179,7 @@ function Reviewer() {
                         >
                           <div className="flex-1 min-w-0">
                             <h3 className="text-xs sm:text-sm md:text-base font-bold text-blue-900 group-hover:text-blue-700 transition break-words leading-snug">
-                              {term.term_name}
+                              {term.term}
                             </h3>
                             {term.abbreviation && (
                               <p className="text-xs text-gray-500 mt-0.5">({term.abbreviation})</p>
@@ -195,14 +197,20 @@ function Reviewer() {
                         {/* Definition - Expandable */}
                         {expandedTerms[term.id] && (
                           <div className="mt-2 pt-2 border-t border-blue-100 animate-fadeIn">
-                            <p className="text-gray-700 leading-relaxed text-xs sm:text-sm md:text-base mb-2">{term.definition}</p>
+                            {term.definitions && term.definitions.map((def, index) => (
+                              <div key={def.id} className="mb-2">
+                                <p className={`text-gray-700 leading-relaxed text-xs sm:text-sm md:text-base ${def.is_correct ? 'font-semibold text-green-700' : ''}`}>
+                                  {def.definition}
+                                </p>
+                              </div>
+                            ))}
                             
                             {/* Image Display */}
                             {term.image_url && (
                               <div className="mt-2 flex justify-center">
                                 <img 
                                   src={term.image_url} 
-                                  alt={term.term_name}
+                                  alt={term.term}
                                   className="max-w-full h-auto max-h-64 sm:max-h-80 md:max-h-96 rounded-lg shadow-sm border border-blue-200 hover:shadow-md transition object-contain"
                                 />
                               </div>

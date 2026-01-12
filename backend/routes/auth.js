@@ -54,9 +54,14 @@ router.post('/register', upload.single('profilePhoto'), [
     return res.status(400).json({ errors: errors.array() });
   }
 
+  // Declare variables outside try block for catch block access
+  let email, name, profilePhoto, password;
+
   try {
-    const { email, password, name } = req.body;
-    const profilePhoto = req.file ? req.file.path : null;
+    email = req.body.email;
+    name = req.body.name;
+    profilePhoto = req.file ? req.file.path : null;
+    password = req.body.password;
 
     // Check if user exists
     const userExists = await db.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -65,21 +70,39 @@ router.post('/register', upload.single('profilePhoto'), [
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, 10);
+    } catch (hashError) {
+      console.error('Password hashing error:', hashError);
+      return res.status(500).json({ error: 'Password hashing failed' });
+    }
 
-    // Create user with profile photo
-    const result = await db.query(
-      'INSERT INTO users (email, password, name, profile_photo) VALUES ($1, $2, $3, $4) RETURNING id, email, name, profile_photo',
-      [email, hashedPassword, name, profilePhoto]
-    );
+    // Create user with optional profile photo
+    let query, params;
+    if (profilePhoto) {
+      query = 'INSERT INTO users (email, password, name, profile_photo) VALUES ($1, $2, $3, $4) RETURNING id, email, name, profile_photo';
+      params = [email, hashedPassword, name, profilePhoto];
+    } else {
+      query = 'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, profile_photo';
+      params = [email, hashedPassword, name];
+    }
+    
+    const result = await db.query(query, params);
 
     const user = result.rows[0];
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({ user, token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Registration error details:', {
+      message: error.message,
+      stack: error.stack,
+      email: email,
+      name: name,
+      hasProfilePhoto: !!profilePhoto
+    });
+    res.status(500).json({ error: 'Registration failed', details: error.message });
   }
 });
 
@@ -97,7 +120,7 @@ router.post('/login', [
     const { email, password } = req.body;
 
     // Find user
-    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    const result = await db.query('SELECT id, email, name, password, profile_photo FROM users WHERE email = $1', [email]);
     if (result.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -117,8 +140,12 @@ router.post('/login', [
       token
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Login failed' });
+    console.error('Login error details:', {
+      message: error.message,
+      stack: error.stack,
+      email: email
+    });
+    res.status(500).json({ error: 'Login failed', details: error.message });
   }
 });
 
@@ -132,7 +159,12 @@ router.get('/verify', verifyToken, async (req, res) => {
 
     res.json({ user: result.rows[0] });
   } catch (error) {
-    res.status(500).json({ error: 'Verification failed' });
+    console.error('Verification error details:', {
+      message: error.message,
+      stack: error.stack,
+      userId: req.userId
+    });
+    res.status(500).json({ error: 'Verification failed', details: error.message });
   }
 });
 

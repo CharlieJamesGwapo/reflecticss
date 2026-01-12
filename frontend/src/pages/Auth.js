@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Loader, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader, Upload, X, CheckCircle, AlertCircle, Sparkles, Zap, Shield } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 function Auth({ setUser }) {
@@ -10,6 +10,9 @@ function Auth({ setUser }) {
   const [showPassword, setShowPassword] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [focusedField, setFocusedField] = useState('');
+  const [successAnimation, setSuccessAnimation] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -25,6 +28,14 @@ function Auth({ setUser }) {
       [name]: value
     }));
     setError('');
+  };
+
+  const handleFieldFocus = (fieldName) => {
+    setFocusedField(fieldName);
+  };
+
+  const handleFieldBlur = () => {
+    setFocusedField('');
   };
 
   const handlePhotoChange = (e) => {
@@ -48,6 +59,18 @@ function Auth({ setUser }) {
       reader.readAsDataURL(file);
       setError('');
     }
+  };
+
+  const handleToggleMode = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsLogin(!isLogin);
+      setFormData({ email: '', password: '', name: '', confirmPassword: '' });
+      setError('');
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      setIsAnimating(false);
+    }, 300);
   };
 
   const removePhoto = () => {
@@ -227,34 +250,80 @@ function Auth({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 flex items-center justify-center p-3 sm:p-4 py-8 sm:py-0">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-20 w-64 sm:w-96 h-64 sm:h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-500 to-pink-500 flex items-center justify-center p-3 sm:p-4 py-8 sm:py-0 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-64 sm:w-96 h-64 sm:h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white rounded-full opacity-10 animate-pulse-glow"></div>
+      </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full opacity-60 animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 6}s`,
+              animationDuration: `${4 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
 
       {/* Main container */}
-      <div className="relative w-full max-w-md">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden backdrop-blur-lg bg-opacity-95">
+      <div className={`relative w-full max-w-md transition-all duration-500 ${isAnimating ? 'scale-95 opacity-0' : 'scale-100 opacity-100 animate-bounce-in'}`}>
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden backdrop-blur-lg bg-opacity-95 transform hover:scale-105 transition-transform duration-300">
           {/* Header with Logo */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-4 sm:px-6 py-8 sm:py-10 text-center flex flex-col items-center justify-center">
-            <div className="relative flex items-center justify-center mb-4">
-              <div className="absolute inset-0 bg-white rounded-full opacity-10 blur-lg"></div>
-              <img 
-                src="/logo.png" 
-                alt="RefletiCSS Logo" 
-                className="h-24 sm:h-32 w-24 sm:w-32 object-cover rounded-full border-3 border-white shadow-lg"
-                title="RefletiCSS - A reflective learning tool in enhancing Technical vocabulary learning"
-              />
+          <div className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-size-200 animate-gradient-shift px-4 sm:px-6 py-8 sm:py-10 text-center flex flex-col items-center justify-center relative overflow-hidden">
+            {/* Animated sparkles */}
+            <div className="absolute inset-0">
+              {[...Array(3)].map((_, i) => (
+                <Sparkles
+                  key={i}
+                  className="absolute text-white opacity-60 animate-pulse"
+                  size={16}
+                  style={{
+                    left: `${20 + i * 30}%`,
+                    top: `${30 + i * 20}%`,
+                    animationDelay: `${i * 0.5}s`
+                  }}
+                />
+              ))}
             </div>
-            <p className="text-xs sm:text-sm text-blue-100 mt-2">Master CSS with Interactive Learning</p>
+            
+            <div className="relative flex items-center justify-center mb-4 z-10">
+              <div className="absolute inset-0 bg-white rounded-full opacity-20 blur-lg animate-pulse"></div>
+              <div className="relative">
+                <img 
+                  src="/logo.png" 
+                  alt="RefletiCSS Logo" 
+                  className="h-24 sm:h-32 w-24 sm:w-32 object-cover rounded-full border-4 border-white shadow-xl animate-float hover:animate-bounce transition-all duration-300"
+                  title="RefletiCSS - A reflective learning tool in enhancing Technical vocabulary learning"
+                />
+                <div className="absolute -top-2 -right-2 bg-yellow-400 rounded-full p-1 animate-bounce">
+                  <Zap size={16} className="text-yellow-800" />
+                </div>
+              </div>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 animate-slide-in-left">
+              {isLogin ? 'Welcome Back!' : 'Join Us Today!'}
+            </h1>
+            <p className="text-xs sm:text-sm text-blue-100 mt-2 animate-slide-in-right">
+              {isLogin ? 'Sign in to continue your learning journey' : 'Start your CSS mastery journey today'}
+            </p>
           </div>
 
           {/* Form container */}
           <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
-            {/* Error message */}
+            {/* Error message with animation */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg animate-error-shake flex items-center gap-3">
+                <AlertCircle className="text-red-500" size={20} />
                 <p className="text-red-700 text-sm font-medium">{error}</p>
               </div>
             )}
@@ -264,44 +333,55 @@ function Auth({ setUser }) {
               {/* Name field (Register only) */}
               {!isLogin && (
                 <>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                  <div className="animate-slide-in-left">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <User size={16} className="text-blue-500" />
                       Full Name
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
+                      <User className={`absolute left-3 top-2.5 sm:top-3 transition-colors duration-300 ${focusedField === 'name' ? 'text-blue-600 scale-110' : 'text-blue-500'}`} size={18} />
                       <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        onFocus={() => handleFieldFocus('name')}
+                        onBlur={handleFieldBlur}
                         placeholder="John Doe"
-                        className="w-full pl-10 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
+                        className={`w-full pl-10 pr-4 py-2 sm:py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 text-sm sm:text-base ${focusedField === 'name' ? 'border-blue-500 shadow-lg shadow-blue-200 scale-105' : 'border-gray-200 hover:border-gray-300'}`}
                       />
+                      {formData.name && (
+                        <CheckCircle className="absolute right-3 top-2.5 sm:top-3 text-green-500 animate-success-bounce" size={18} />
+                      )}
                     </div>
                   </div>
 
                   {/* Profile Photo Upload (Register only) */}
-                  <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                  <div className="animate-slide-in-right">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <Upload size={16} className="text-blue-500" />
                       Profile Photo (Optional)
                     </label>
                     {photoPreview ? (
-                      <div className="relative w-full">
-                        <img src={photoPreview} alt="Preview" className="w-full h-32 sm:h-48 object-cover rounded-lg" />
+                      <div className="relative w-full group">
+                        <img src={photoPreview} alt="Preview" className="w-full h-32 sm:h-48 object-cover rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300" />
                         <button
                           type="button"
                           onClick={removePhoto}
-                          className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
+                          className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all duration-300 hover:scale-110 shadow-lg"
                         >
                           <X size={18} />
                         </button>
+                        <div className="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                          <CheckCircle size={12} />
+                          Photo Added
+                        </div>
                       </div>
                     ) : (
-                      <label className="w-full flex items-center justify-center px-3 sm:px-4 py-4 sm:py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
+                      <label className="w-full flex items-center justify-center px-3 sm:px-4 py-4 sm:py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 hover:scale-105 group">
                         <div className="flex flex-col items-center">
-                          <Upload className="text-gray-400 mb-2" size={20} />
-                          <span className="text-xs sm:text-sm text-gray-600">Click to upload photo</span>
+                          <Upload className="text-gray-400 mb-2 group-hover:text-blue-500 transition-colors group-hover:animate-bounce" size={20} />
+                          <span className="text-xs sm:text-sm text-gray-600 group-hover:text-blue-600 transition-colors">Click to upload photo</span>
                           <span className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</span>
                         </div>
                         <input
@@ -317,64 +397,82 @@ function Auth({ setUser }) {
               )}
 
               {/* Email field */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+              <div className="animate-slide-in-left">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <Mail size={16} className="text-blue-500" />
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
+                  <Mail className={`absolute left-3 top-2.5 sm:top-3 transition-colors duration-300 ${focusedField === 'email' ? 'text-blue-600 scale-110' : 'text-blue-500'}`} size={18} />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onFocus={() => handleFieldFocus('email')}
+                    onBlur={handleFieldBlur}
                     placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
+                    className={`w-full pl-10 pr-4 py-2 sm:py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 text-sm sm:text-base ${focusedField === 'email' ? 'border-blue-500 shadow-lg shadow-blue-200 scale-105' : 'border-gray-200 hover:border-gray-300'}`}
                   />
+                  {formData.email && formData.email.includes('@') && (
+                    <CheckCircle className="absolute right-3 top-2.5 sm:top-3 text-green-500 animate-success-bounce" size={18} />
+                  )}
                 </div>
               </div>
 
               {/* Password field */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+              <div className="animate-slide-in-right">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <Lock size={16} className="text-blue-500" />
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
+                  <Lock className={`absolute left-3 top-2.5 sm:top-3 transition-colors duration-300 ${focusedField === 'password' ? 'text-blue-600 scale-110' : 'text-blue-500'}`} size={18} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    onFocus={() => handleFieldFocus('password')}
+                    onBlur={handleFieldBlur}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
+                    className={`w-full pl-10 pr-12 py-2 sm:py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 text-sm sm:text-base ${focusedField === 'password' ? 'border-blue-500 shadow-lg shadow-blue-200 scale-105' : 'border-gray-200 hover:border-gray-300'}`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 sm:top-3 text-gray-400 hover:text-blue-500 transition-colors"
+                    className="absolute right-3 top-2.5 sm:top-3 text-gray-400 hover:text-blue-500 transition-all duration-300 hover:scale-110"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
+                  {formData.password && formData.password.length >= 6 && (
+                    <CheckCircle className="absolute right-12 top-2.5 sm:top-3 text-green-500 animate-success-bounce" size={18} />
+                  )}
                 </div>
               </div>
 
               {/* Confirm password field (Register only) */}
               {!isLogin && (
-                <div>
-                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                <div className="animate-slide-in-left">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <Lock size={16} className="text-blue-500" />
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-2.5 sm:top-3 text-blue-500" size={18} />
+                    <Lock className={`absolute left-3 top-2.5 sm:top-3 transition-colors duration-300 ${focusedField === 'confirmPassword' ? 'text-blue-600 scale-110' : 'text-blue-500'}`} size={18} />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
+                      onFocus={() => handleFieldFocus('confirmPassword')}
+                      onBlur={handleFieldBlur}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
+                      className={`w-full pl-10 pr-4 py-2 sm:py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 text-sm sm:text-base ${focusedField === 'confirmPassword' ? 'border-blue-500 shadow-lg shadow-blue-200 scale-105' : 'border-gray-200 hover:border-gray-300'}`}
                     />
+                    {formData.confirmPassword && formData.password === formData.confirmPassword && (
+                      <CheckCircle className="absolute right-3 top-2.5 sm:top-3 text-green-500 animate-success-bounce" size={18} />
+                    )}
                   </div>
                 </div>
               )}
@@ -383,52 +481,75 @@ function Auth({ setUser }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-4 sm:mt-6 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold py-2.5 sm:py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                className={`w-full mt-4 sm:mt-6 bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-size-200 animate-gradient-shift text-white font-bold py-2.5 sm:py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base relative overflow-hidden group ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:scale-105 hover:shadow-purple-200'}`}
               >
-                {loading ? (
-                  <>
-                    <Loader size={18} className="animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  isLogin ? 'Sign In' : 'Create Account'
-                )}
+                <span className="relative z-10">
+                  {loading ? (
+                    <>
+                      <Loader size={18} className="animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      {isLogin ? (
+                        <>
+                          <Shield size={18} />
+                          Sign In Securely
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={18} />
+                          Create Account
+                        </>
+                      )}
+                    </>
+                  )}
+                </span>
+                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="my-4 sm:my-6 flex items-center">
+            {/* Divider with animation */}
+            <div className="my-4 sm:my-6 flex items-center animate-fade-in">
               <div className="flex-1 border-t-2 border-gray-200"></div>
-              <span className="px-3 text-gray-500 text-xs sm:text-sm">or</span>
+              <span className="px-3 text-gray-500 text-xs sm:text-sm animate-pulse">or</span>
               <div className="flex-1 border-t-2 border-gray-200"></div>
             </div>
 
             {/* Toggle button */}
-            <div className="text-center">
+            <div className="text-center animate-slide-up">
               <p className="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base">
                 {isLogin ? "Don't have an account?" : 'Already have an account?'}
               </p>
               <button
                 type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setFormData({ email: '', password: '', name: '', confirmPassword: '' });
-                  setError('');
-                  setPhotoFile(null);
-                  setPhotoPreview(null);
-                }}
-                className="text-blue-600 font-semibold hover:text-blue-700 transition-colors text-sm sm:text-base"
+                onClick={handleToggleMode}
+                className="text-blue-600 font-semibold hover:text-purple-600 transition-all duration-300 text-sm sm:text-base hover:scale-105 inline-flex items-center gap-2 group"
               >
-                {isLogin ? 'Create Account' : 'Sign In'}
+                {isLogin ? (
+                  <>
+                    <Sparkles size={16} className="group-hover:animate-bounce" />
+                    Create Account
+                  </>
+                ) : (
+                  <>
+                    <Shield size={16} className="group-hover:animate-bounce" />
+                    Sign In
+                  </>
+                )}
               </button>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 text-center border-t border-gray-200">
-            <p className="text-gray-600 text-xs sm:text-xs">
-              Your data is securely stored in our Neon PostgreSQL database
-            </p>
+          {/* Footer with security badge */}
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-4 sm:px-6 py-3 sm:py-4 text-center border-t border-gray-200 animate-fade-in">
+            <div className="flex items-center justify-center gap-2">
+              <Shield size={16} className="text-green-500" />
+              <p className="text-gray-600 text-xs sm:text-xs">
+                Your data is securely stored in our Neon PostgreSQL database
+              </p>
+              <Shield size={16} className="text-green-500" />
+            </div>
           </div>
         </div>
       </div>
