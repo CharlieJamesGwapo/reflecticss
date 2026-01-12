@@ -1,0 +1,36 @@
+-- ========================================
+-- COC2 COMPLETE DATABASE SETUP
+-- ========================================
+-- 
+-- This file contains ALL 71 COC2 questions:
+-- - Part 2: Network Topology (7 questions)
+-- - Week 8-10: Terms for Reviewer (64 questions)
+-- 
+-- Categories included:
+-- 1. Network Topology (7 questions)
+-- 2. Network Configuration (7 questions) 
+-- 3. Network Location Types (4 questions)
+-- 4. Network Sharing (2 questions)
+-- 5. Network Security (9 questions)
+-- 6. Network Devices (11 questions)
+-- 7. Client Devices (4 questions)
+-- 8. IP Addressing (3 questions)
+-- 9. Tools & Testing Devices (6 questions)
+-- 10. Network Cable Types (9 questions)
+-- 11. Cable Connectors (3 questions)
+-- 12. UTP Color Coding Standards (2 questions)
+-- 13. Cable Raceways (4 questions)
+--
+-- TOTAL: 71 questions across 13 categories
+--
+-- USAGE:
+-- 1. Run this SQL file in your Vercel PostgreSQL database
+-- 2. The frontend will automatically fetch from /api/coc2/terms
+-- 3. All questions include proper choices with correct answer identification
+--
+-- TABLE STRUCTURE:
+-- coc2_quiz_questions (id, question_text, category, difficulty)
+-- coc2_quiz_choices (id, question_id, choice_text, is_correct)
+--
+-- Each question has 4 choices with exactly 1 correct answer
+-- ========================================
