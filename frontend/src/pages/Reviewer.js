@@ -31,7 +31,7 @@ function Reviewer() {
       setTerms(data || []);
       
       // Extract unique categories
-      const uniqueCategories = [...new Set(data.map(term => term.category))];
+      const uniqueCategories = [...new Set((data || []).map(term => term.category).filter(Boolean))];
       setCategories(uniqueCategories);
     } catch (err) {
       console.error('Error fetching terms:', err);
@@ -49,10 +49,8 @@ function Reviewer() {
   };
 
   const filteredTerms = terms.filter(term => {
-    const matchesSearch = (term.term && term.term.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                         (term.definitions && term.definitions.some(def => 
-                           def.definition && def.definition.toLowerCase().includes(searchTerm.toLowerCase())
-                         ));
+    const matchesSearch = (term.term_name && term.term_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (term.definition && term.definition.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = !selectedCategory || term.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -137,7 +135,7 @@ function Reviewer() {
             </div>
             <div className="bg-blue-50 border-l-4 border-blue-600 p-2 sm:p-3 rounded text-center">
               <p className="text-xs text-gray-600">Page</p>
-              <p className="text-sm sm:text-lg font-bold text-blue-900">{currentPage}/{totalPages}</p>
+              <p className="text-sm sm:text-lg font-bold text-blue-900">{currentPage}/{totalPages || 1}</p>
             </div>
           </div>
         </div>
@@ -179,7 +177,7 @@ function Reviewer() {
                         >
                           <div className="flex-1 min-w-0">
                             <h3 className="text-xs sm:text-sm md:text-base font-bold text-blue-900 group-hover:text-blue-700 transition break-words leading-snug">
-                              {term.term}
+                              {term.term_name}
                             </h3>
                             {term.abbreviation && (
                               <p className="text-xs text-gray-500 mt-0.5">({term.abbreviation})</p>
@@ -197,20 +195,20 @@ function Reviewer() {
                         {/* Definition - Expandable */}
                         {expandedTerms[term.id] && (
                           <div className="mt-2 pt-2 border-t border-blue-100 animate-fadeIn">
-                            {term.definitions && term.definitions.map((def, index) => (
-                              <div key={def.id} className="mb-2">
-                                <p className={`text-gray-700 leading-relaxed text-xs sm:text-sm md:text-base ${def.is_correct ? 'font-semibold text-green-700' : ''}`}>
-                                  {def.definition}
+                            {term.definition && (
+                              <div className="mb-2">
+                                <p className="text-gray-700 leading-relaxed text-xs sm:text-sm md:text-base">
+                                  {term.definition}
                                 </p>
                               </div>
-                            ))}
+                            )}
                             
                             {/* Image Display */}
                             {term.image_url && (
                               <div className="mt-2 flex justify-center">
                                 <img 
                                   src={term.image_url} 
-                                  alt={term.term}
+                                  alt={term.term_name}
                                   className="max-w-full h-auto max-h-64 sm:max-h-80 md:max-h-96 rounded-lg shadow-sm border border-blue-200 hover:shadow-md transition object-contain"
                                 />
                               </div>
