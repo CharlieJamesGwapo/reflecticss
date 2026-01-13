@@ -18,6 +18,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/coc1', require('./routes/coc1'));
 app.use('/api/coc2', require('./routes/coc2'));
+app.use('/api/coc3', require('./routes/coc3'));
 
 // Health check
 app.get('/health', (req, res) => {
