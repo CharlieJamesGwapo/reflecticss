@@ -18,7 +18,24 @@ function QuizDetail() {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/quizzes/${id}`);
         if (response.ok) {
           const data = await response.json();
-          setQuiz(data);
+          
+          // Randomize questions order
+          if (data.questions && data.questions.length > 0) {
+            const shuffledQuestions = [...data.questions].sort(() => Math.random() - 0.5);
+            
+            // Also randomize choices within each question
+            const randomizedQuestions = shuffledQuestions.map(question => ({
+              ...question,
+              choices: [...question.choices].sort(() => Math.random() - 0.5)
+            }));
+            
+            setQuiz({
+              ...data,
+              questions: randomizedQuestions
+            });
+          } else {
+            setQuiz(data);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch quiz:', error);

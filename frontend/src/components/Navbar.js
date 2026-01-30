@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, User, Settings, Search, Bell, BookOpen, BarChart3, Award, Home, TrendingUp } from 'lucide-react';
+import { Menu, X, LogOut, User, Settings, Search, Bell, BookOpen, BarChart3, Award, Home, TrendingUp, MoreVertical } from 'lucide-react';
 
 function Navbar({ user, setUser }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const profileRef = useRef(null);
+  const settingsRef = useRef(null);
   const navigate = useNavigate();
 
   // Get API URL with fallback
@@ -17,11 +19,14 @@ function Navbar({ user, setUser }) {
     return process.env.REACT_APP_API_URL || 'http://localhost:5000';
   };
 
-  // Close profile dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false);
+      }
+      if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+        setIsSettingsOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -69,7 +74,12 @@ function Navbar({ user, setUser }) {
   }, [user]);
 
   const handleLogout = () => {
+    // Clear both localStorage and sessionStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('rememberMe');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     setUser(null);
     navigate('/');
   };
@@ -163,6 +173,54 @@ function Navbar({ user, setUser }) {
 
           {/* Notifications & User Menu */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* 3-Dash Settings Menu */}
+            <div className="relative" ref={settingsRef}>
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className="text-white hover:text-blue-100 transition p-2"
+                title="Settings Menu"
+              >
+                <MoreVertical size={20} />
+              </button>
+              
+              {/* Settings Dropdown */}
+              {isSettingsOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <p className="text-gray-900 font-semibold text-sm">Settings</p>
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      to="/account-settings"
+                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+                      onClick={() => setIsSettingsOpen(false)}
+                    >
+                      <Settings size={18} className="text-blue-600" />
+                      <span className="text-sm font-medium">Account Settings</span>
+                    </Link>
+                    <Link
+                      to="/quiz-history"
+                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+                      onClick={() => setIsSettingsOpen(false)}
+                    >
+                      <TrendingUp size={18} className="text-green-600" />
+                      <span className="text-sm font-medium">Quiz History</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        // Add theme toggle functionality here
+                        setIsSettingsOpen(false);
+                      }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+                    >
+                      <Award size={18} className="text-purple-600" />
+                      <span className="text-sm font-medium">Achievements</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             {user && (
               <div className="relative group">
                 <button className="relative text-white hover:text-blue-100 transition p-2">

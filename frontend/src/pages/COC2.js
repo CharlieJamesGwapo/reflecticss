@@ -1,411 +1,347 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { HelpCircle, BarChart3, Filter, AlertCircle, CheckCircle, Clock, Zap, Network, Shield, Wifi, FileText, Lock } from 'lucide-react';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from 'react';
+import { BookOpen, ChevronDown, ChevronUp, ArrowLeft, Search, Filter, Network, Shield, Wifi, FileText, Lock, Monitor, HardDrive, Cpu, Router, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function COC2() {
-  const [activeTab, setActiveTab] = useState('quiz');
-  const [questions, setQuestions] = useState([]);
-  const [categories, setCategories] = useState(['Network Topology', 'Network Configuration', 'Network Location Types', 'Network Sharing', 'Network Security']);
+  const navigate = useNavigate();
+  const [terms, setTerms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [expandedTerms, setExpandedTerms] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [quizStats, setQuizStats] = useState({ correct: 0, total: 0 });
-  const [timeLeft, setTimeLeft] = useState(20);
-  const [quizStarted, setQuizStarted] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [termsPerPage] = useState(10);
 
-  // Sample questions for demonstration
-  const sampleQuestions = [
+  // Sample COC2 terms data
+  const sampleTerms = [
     {
       id: 1,
-      question_text: 'Your teacher asks class to redesign computer lab, focusing on how devices are arranged and connected. What concept are you being asked to work on?',
+      term: 'Network Topology',
+      definition: 'The physical or logical arrangement of nodes (computers, printers, etc.) in a network, including how they are connected and communicate with each other.',
       category: 'Network Topology',
-      question_number: 1,
-      choices: [
-        { id: 1, choice_text: 'Network Security', is_correct: false },
-        { id: 2, choice_text: 'Network Topology', is_correct: true },
-        { id: 3, choice_text: 'Printer Sharing', is_correct: false },
-        { id: 4, choice_text: 'IP Address', is_correct: false }
-      ]
+      image: '/network.png',
+      examples: ['Bus Topology', 'Star Topology', 'Ring Topology', 'Mesh Topology', 'Hybrid Topology']
     },
     {
       id: 2,
-      question_text: 'In a small shop, all computers are connected to a single main cable. When cable is damaged, whole network stops working. What topology is this?',
+      term: 'Bus Topology',
+      definition: 'A network topology where all devices are connected to a single central cable called the bus or backbone. Data travels along this cable and all devices receive it.',
       category: 'Network Topology',
-      question_number: 2,
-      choices: [
-        { id: 5, choice_text: 'Mesh', is_correct: false },
-        { id: 6, choice_text: 'Bus', is_correct: true },
-        { id: 7, choice_text: 'Star', is_correct: false },
-        { id: 8, choice_text: 'Hybrid', is_correct: false }
-      ]
+      image: '/bus.png',
+      examples: ['Early Ethernet networks', 'Simple office networks']
     },
     {
       id: 3,
-      question_text: 'A company uses a network where each device passes message to the next one in a circular path. What topology is being used?',
+      term: 'Star Topology',
+      definition: 'A network topology where all devices are connected to a central hub or switch. Data passes through the central device to reach other devices.',
       category: 'Network Topology',
-      question_number: 3,
-      choices: [
-        { id: 9, choice_text: 'Ring', is_correct: true },
-        { id: 10, choice_text: 'Star', is_correct: false },
-        { id: 11, choice_text: 'Tree', is_correct: false },
-        { id: 12, choice_text: 'Bus', is_correct: false }
-      ]
+      image: '/star.png',
+      examples: ['Modern Ethernet networks', 'Home networks', 'Office LANs']
     },
     {
       id: 4,
-      question_text: 'A school network uses a central switch to connect all computers. If switch fails, all computers lose connection. What topology is this?',
+      term: 'Ring Topology',
+      definition: 'A network topology where each device is connected to exactly two other devices, forming a single continuous pathway for signals through each node.',
       category: 'Network Topology',
-      question_number: 4,
-      choices: [
-        { id: 13, choice_text: 'Mesh', is_correct: false },
-        { id: 14, choice_text: 'Star', is_correct: true },
-        { id: 15, choice_text: 'Hybrid', is_correct: false },
-        { id: 16, choice_text: 'Tree', is_correct: false }
-      ]
+      image: '/ring.png',
+      examples: ['Token Ring networks', 'Fiber Distributed Data Interface (FDDI)']
     },
     {
       id: 5,
-      question_text: 'In a military base, each device is connected to many other devices to ensure communication continues even if one path fails. What topology is this?',
+      term: 'Mesh Topology',
+      definition: 'A network topology where devices are interconnected with many redundant interconnections between network nodes. In a fully connected mesh, each node is connected to every other node.',
       category: 'Network Topology',
-      question_number: 5,
-      choices: [
-        { id: 17, choice_text: 'Mesh', is_correct: true },
-        { id: 18, choice_text: 'Ring', is_correct: false },
-        { id: 19, choice_text: 'Bus', is_correct: false },
-        { id: 20, choice_text: 'LAN', is_correct: false }
-      ]
+      image: '/mesh.png',
+      examples: ['Wireless networks', 'Internet backbone', 'Military networks']
+    },
+    {
+      id: 6,
+      term: 'Network Configuration',
+      definition: 'The process of setting up a network\'s parameters, controls, and settings to ensure proper communication between devices and optimal network performance.',
+      category: 'Network Configuration',
+      image: '/config.png',
+      examples: ['IP addressing', 'Subnet masking', 'DNS configuration', 'Gateway settings']
+    },
+    {
+      id: 7,
+      term: 'IP Address',
+      definition: 'A unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol for communication. Serves two main functions: host identification and location addressing.',
+      category: 'Network Configuration',
+      image: '/ip.png',
+      examples: ['192.168.1.1 (IPv4)', '2001:0db8:85a3:0000:0000:8a2e:0370:7334 (IPv6)']
+    },
+    {
+      id: 8,
+      term: 'Subnet Mask',
+      definition: 'A 32-bit number that masks an IP address and divides the IP address into network address and host address. Used to determine whether an IP address is on the local subnet or a remote network.',
+      category: 'Network Configuration',
+      image: '/subnet.png',
+      examples: ['255.255.255.0', '255.255.0.0', '255.0.0.0']
+    },
+    {
+      id: 9,
+      term: 'Network Location Types',
+      definition: 'Classification of network environments based on their security settings and accessibility, such as public, private, and domain networks.',
+      category: 'Network Location Types',
+      image: '/location.png',
+      examples: ['Public Network', 'Private Network', 'Domain Network']
+    },
+    {
+      id: 10,
+      term: 'Public Network',
+      definition: 'A network type with the highest level of security restrictions, typically used in public places like airports, coffee shops, and hotels where security cannot be guaranteed.',
+      category: 'Network Location Types',
+      image: '/public.png',
+      examples: ['WiFi hotspots', 'Airport networks', 'Coffee shop networks']
+    },
+    {
+      id: 11,
+      term: 'Private Network',
+      definition: 'A network type with moderate security settings, used for home or small office networks where you trust the other devices on the network.',
+      category: 'Network Location Types',
+      image: '/private.png',
+      examples: ['Home networks', 'Small office networks', 'Trusted office environments']
+    },
+    {
+      id: 12,
+      term: 'Network Sharing',
+      definition: 'The practice of allowing multiple users or devices to access and use network resources such as files, printers, internet connections, and other peripherals.',
+      category: 'Network Sharing',
+      image: '/sharing.png',
+      examples: ['File sharing', 'Printer sharing', 'Internet connection sharing']
+    },
+    {
+      id: 13,
+      term: 'File Sharing',
+      definition: 'The process of distributing or providing access to digitally stored information such as computer programs, multimedia files, documents, or electronic books.',
+      category: 'Network Sharing',
+      image: '/fileshare.png',
+      examples: ['Network attached storage (NAS)', 'Windows file sharing', 'FTP servers']
+    },
+    {
+      id: 14,
+      term: 'Printer Sharing',
+      definition: 'The ability for multiple computers on a network to use a single printer, reducing costs and improving efficiency in office environments.',
+      category: 'Network Sharing',
+      image: '/printer.png',
+      examples: ['Network printers', 'Shared local printers', 'Print servers']
+    },
+    {
+      id: 15,
+      term: 'Network Security',
+      definition: 'The practice of preventing and monitoring unauthorized access, misuse, modification, or denial of a computer network and network-accessible resources.',
+      category: 'Network Security',
+      image: '/security.png',
+      examples: ['Firewalls', 'Encryption', 'Authentication', 'Access control']
     }
   ];
 
-  // Filter questions by category
-  const filteredQuestions = selectedCategory 
-    ? sampleQuestions.filter(q => q.category === selectedCategory)
-    : sampleQuestions;
-
-  // Handle submit answer
-  const handleSubmitAnswer = useCallback(() => {
-    if (!selectedAnswer || !filteredQuestions[currentQuestionIndex]) {
-      return;
-    }
-
-    const currentQ = filteredQuestions[currentQuestionIndex];
-    const correctChoice = currentQ.choices?.find(c => c.is_correct);
-    const isCorrect = selectedAnswer === correctChoice?.id;
-
-    setShowResult(true);
-    
-    if (isCorrect) {
-      setQuizStats(prev => ({ ...prev, correct: prev.correct + 1 }));
-    }
-
-    // Move to next question after delay
-    setTimeout(() => {
-      if (currentQuestionIndex < filteredQuestions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedAnswer(null);
-        setShowResult(false);
-        setTimeLeft(20);
-      } else {
-        // Quiz completed
-        handleQuizComplete();
-      }
-    }, 1500);
-  }, [selectedAnswer, filteredQuestions, currentQuestionIndex]);
-
-  // Handle quiz complete
-  const handleQuizComplete = async () => {
-    const percentage = Math.round((quizStats.correct / filteredQuestions.length) * 100);
-    let title, icon, color;
-    
-    if (percentage >= 80) {
-      title = 'Excellent!';
-      icon = 'success';
-      color = '#10b981';
-    } else if (percentage >= 60) {
-      title = 'Good Job!';
-      icon = 'info';
-      color = '#3b82f6';
-    } else {
-      title = 'Keep Learning!';
-      icon = 'warning';
-      color = '#f59e0b';
-    }
-
-    await Swal.fire({
-      icon,
-      title,
-      html: `
-        <div class="text-center">
-          <p class="text-2xl font-bold mb-2">${quizStats.correct}/${filteredQuestions.length}</p>
-          <p class="text-lg">${percentage}% Score</p>
-          <div class="mt-4">
-            <div class="w-full bg-gray-200 rounded-full h-4">
-              <div class="h-4 rounded-full transition-all duration-500" style="width: ${percentage}%; background-color: ${color}"></div>
-            </div>
-          </div>
-        </div>
-      `,
-      confirmButtonText: 'Try Again',
-      confirmButtonColor: color,
-      showCancelButton: true,
-      cancelButtonText: 'Back to Categories',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setQuizStarted(false);
-        setCurrentQuestionIndex(0);
-        setQuizStats({ correct: 0, total: 0 });
-      } else {
-        setQuizStarted(false);
-        setCurrentQuestionIndex(0);
-        setQuestions([]);
-      }
-    });
-  };
-
-  // Timer effect
   useEffect(() => {
-    if (quizStarted && filteredQuestions.length > 0 && !showResult) {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleSubmitAnswer();
-            return 20;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    // Load sample data
+    setLoading(true);
+    setTimeout(() => {
+      setTerms(sampleTerms);
+      const uniqueCategories = [...new Set(sampleTerms.map(term => term.category))];
+      setCategories(uniqueCategories);
+      setLoading(false);
+    }, 500);
+  }, []);
 
-      return () => clearInterval(timer);
-    }
-  }, [quizStarted, filteredQuestions, showResult, handleSubmitAnswer]);
-
-  // Start quiz
-  const startQuiz = () => {
-    setQuizStarted(true);
-    setQuestions(filteredQuestions);
-    setCurrentQuestionIndex(0);
-    setQuizStats({ correct: 0, total: 0 });
-    setTimeLeft(20);
+  const toggleTerm = (termId) => {
+    setExpandedTerms(prev => ({
+      ...prev,
+      [termId]: !prev[termId]
+    }));
   };
 
-  const currentQuestion = filteredQuestions[currentQuestionIndex];
+  const filteredTerms = terms.filter(term => {
+    const matchesSearch = term.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         term.definition.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategory || term.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const indexOfLastTerm = currentPage * termsPerPage;
+  const indexOfFirstTerm = indexOfLastTerm - termsPerPage;
+  const currentTerms = filteredTerms.slice(indexOfFirstTerm, indexOfLastTerm);
+  const totalPages = Math.ceil(filteredTerms.length / termsPerPage);
+
+  const getCategoryIcon = (category) => {
+    switch(category) {
+      case 'Network Topology': return <Network className="w-5 h-5" />;
+      case 'Network Configuration': return <Router className="w-5 h-5" />;
+      case 'Network Location Types': return <Monitor className="w-5 h-5" />;
+      case 'Network Sharing': return <FileText className="w-5 h-5" />;
+      case 'Network Security': return <Shield className="w-5 h-5" />;
+      default: return <Network className="w-5 h-5" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
+          <p className="text-white text-xl font-semibold">Loading COC2 Reviewer...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 px-4 py-12">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-blue-900 mb-2 flex items-center gap-3">
-            <Network className="text-blue-600" size={40} />
-            COC 2: Network Topology
-          </h1>
-          <p className="text-blue-600">Master network concepts, topologies, and security fundamentals</p>
+          <button
+            onClick={() => navigate('/reviewer-selection')}
+            className="flex items-center text-white hover:text-blue-200 mb-6 transition"
+          >
+            <ArrowLeft size={24} />
+            <span className="ml-2">Back to Reviewer Selection</span>
+          </button>
+          
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">COC 2 Reviewer</h1>
+            <p className="text-xl text-blue-100">Advanced Computer Architecture & Networks</p>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-lg mb-8">
-          <div className="flex border-b">
-            <button
-              onClick={() => setActiveTab('quiz')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'quiz'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <HelpCircle size={20} />
-                Quiz
+        {/* Search and Filter */}
+        <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white border-opacity-20">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search terms or definitions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                />
               </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'stats'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <BarChart3 size={20} />
-                Categories
-              </div>
-            </button>
+            </div>
+            
+            <div className="md:w-64">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              >
+                <option value="" className="text-gray-800">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category} className="text-gray-800">
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+        </div>
 
-          {/* Quiz Tab Content */}
-          {activeTab === 'quiz' && (
-            <div className="p-8">
-              {!quizStarted ? (
-                <div className="text-center">
-                  <div className="mb-8">
-                    <Network className="mx-auto text-blue-600 mb-4" size={80} />
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Network Topology Quiz</h2>
-                    <p className="text-xl text-gray-600 mb-8">
-                      Test your knowledge on network topologies, configurations, and security
-                    </p>
+        {/* Terms List */}
+        <div className="space-y-4">
+          {currentTerms.map(term => (
+            <div key={term.id} className="bg-white bg-opacity-10 backdrop-blur-md rounded-xl border border-white border-opacity-20 overflow-hidden">
+              <button
+                onClick={() => toggleTerm(term.id)}
+                className="w-full px-6 py-4 text-left hover:bg-white hover:bg-opacity-5 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 bg-opacity-30 rounded-lg">
+                      {getCategoryIcon(term.category)}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">{term.term}</h3>
+                      <p className="text-blue-200 text-sm">{term.category}</p>
+                    </div>
                   </div>
-
-                  {/* Category Selection */}
-                  <div className="max-w-md mx-auto mb-8">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Filter size={16} className="inline mr-2" />
-                      Select Category (Optional)
-                    </label>
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">All Categories</option>
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-blue-500 bg-opacity-30 px-3 py-1 rounded-full text-xs text-blue-200">
+                      {term.examples.length} examples
+                    </span>
+                    {expandedTerms[term.id] ? (
+                      <ChevronUp className="text-white" size={20} />
+                    ) : (
+                      <ChevronDown className="text-white" size={20} />
+                    )}
                   </div>
-
-                  <button
-                    onClick={startQuiz}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors flex items-center gap-2 mx-auto"
-                  >
-                    <Zap size={20} />
-                    Start Quiz
-                  </button>
                 </div>
-              ) : loading ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading questions...</p>
-                </div>
-              ) : filteredQuestions.length > 0 && currentQuestion ? (
-                <div className="max-w-4xl mx-auto">
-                  {/* Progress Bar */}
-                  <div className="mb-6">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">
-                        Question {currentQuestionIndex + 1} of {filteredQuestions.length}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Clock size={16} className="text-gray-500" />
-                        <span className={`text-sm font-medium ${timeLeft <= 5 ? 'text-red-600' : 'text-gray-700'}`}>
-                          {timeLeft}s
-                        </span>
+              </button>
+              
+              {expandedTerms[term.id] && (
+                <div className="px-6 pb-6 border-t border-white border-opacity-20">
+                  <div className="pt-4">
+                    {term.image && (
+                      <div className="mb-4">
+                        <img 
+                          src={term.image} 
+                          alt={term.term}
+                          className="w-full max-w-md mx-auto rounded-lg border border-white border-opacity-30"
+                        />
                       </div>
+                    )}
+                    
+                    <div className="mb-4">
+                      <h4 className="text-lg font-semibold text-white mb-2">Definition:</h4>
+                      <p className="text-blue-100 leading-relaxed">{term.definition}</p>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentQuestionIndex + 1) / filteredQuestions.length) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Question Card */}
-                  <div className="bg-white border-2 border-gray-200 rounded-xl p-8 shadow-lg">
-                    <div className="flex items-start gap-3 mb-6">
-                      <div className="bg-blue-100 rounded-full p-2">
-                        {currentQuestion.category === 'Network Topology' && <Network size={24} className="text-blue-600" />}
-                        {currentQuestion.category === 'Network Configuration' && <Wifi size={24} className="text-blue-600" />}
-                        {currentQuestion.category === 'Network Location Types' && <FileText size={24} className="text-blue-600" />}
-                        {currentQuestion.category === 'Network Sharing' && <FileText size={24} className="text-blue-600" />}
-                        {currentQuestion.category === 'Network Security' && <Lock size={24} className="text-blue-600" />}
-                      </div>
-                      <div className="flex-1">
-                        <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full mb-3">
-                          {currentQuestion.category}
-                        </span>
-                        <h3 className="text-xl font-semibold text-gray-900 leading-relaxed">
-                          {currentQuestion.question_text}
-                        </h3>
-                      </div>
-                    </div>
-
-                    {/* Answer Choices */}
-                    <div className="space-y-3">
-                      {currentQuestion.choices?.map((choice) => {
-                        const isCorrect = showResult && choice.is_correct;
-                        const isSelected = selectedAnswer === choice.id;
-                        const isWrong = showResult && isSelected && !choice.is_correct;
-                        
-                        return (
-                          <button
-                            key={choice.id}
-                            onClick={() => !showResult && setSelectedAnswer(choice.id)}
-                            disabled={showResult}
-                            className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-300 ${
-                              showResult
-                                ? isCorrect
-                                  ? 'border-green-500 bg-green-50'
-                                  : isWrong
-                                  ? 'border-red-500 bg-red-50'
-                                  : 'border-gray-200 bg-gray-50'
-                                : isSelected
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium">{choice.choice_text}</span>
-                              {showResult && (
-                                <div>
-                                  {isCorrect && <CheckCircle size={20} className="text-green-600" />}
-                                  {isWrong && <AlertCircle size={20} className="text-red-600" />}
-                                </div>
-                              )}
+                    
+                    {term.examples && term.examples.length > 0 && (
+                      <div>
+                        <h4 className="text-lg font-semibold text-white mb-2">Examples:</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {term.examples.map((example, index) => (
+                            <div key={index} className="flex items-center gap-2 text-blue-100">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                              <span>{example}</span>
                             </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Submit Button */}
-                    {!showResult && (
-                      <div className="mt-6 text-center">
-                        <button
-                          onClick={handleSubmitAnswer}
-                          disabled={!selectedAnswer}
-                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-lg transition-colors"
-                        >
-                          Submit Answer
-                        </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-gray-600">No questions available.</p>
-                </div>
               )}
             </div>
-          )}
-
-          {/* Stats Tab Content */}
-          {activeTab === 'stats' && (
-            <div className="p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Quiz Categories</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories.map(category => (
-                  <div key={category} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-                    <div className="flex items-center gap-3 mb-3">
-                      {category === 'Network Topology' && <Network size={24} className="text-blue-600" />}
-                      {category === 'Network Configuration' && <Wifi size={24} className="text-blue-600" />}
-                      {category === 'Network Location Types' && <FileText size={24} className="text-blue-600" />}
-                      {category === 'Network Sharing' && <FileText size={24} className="text-blue-600" />}
-                      {category === 'Network Security' && <Lock size={24} className="text-blue-600" />}
-                      <h4 className="font-semibold text-gray-900">{category}</h4>
-                    </div>
-                    <p className="text-gray-600 text-sm">
-                      Test your knowledge of {category.toLowerCase()} concepts
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            
+            <span className="text-white">
+              Page {currentPage} of {totalPages}
+            </span>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
+
+        {currentTerms.length === 0 && (
+          <div className="text-center py-20">
+            <BookOpen size={48} className="mx-auto text-white mb-4 opacity-50" />
+            <p className="text-white text-lg">No terms found matching your criteria</p>
+          </div>
+        )}
       </div>
     </div>
   );

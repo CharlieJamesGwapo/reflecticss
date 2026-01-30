@@ -19,6 +19,7 @@ function Auth({ setUser }) {
     name: '',
     confirmPassword: ''
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -160,8 +161,16 @@ function Auth({ setUser }) {
           return;
         }
 
-        // Store token and user
-        localStorage.setItem('token', data.token);
+        // Store token and user with remember me preference
+        if (rememberMe) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          sessionStorage.setItem('token', data.token);
+          sessionStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('rememberMe', 'false');
+        }
         setUser(data.user);
 
         // Success alert
@@ -450,6 +459,23 @@ function Auth({ setUser }) {
                   )}
                 </div>
               </div>
+
+              {/* Remember Me checkbox (Login only) */}
+              {isLogin && (
+                <div className="animate-slide-in-left">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all duration-300 group-hover:border-blue-400"
+                    />
+                    <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
+                      Remember me for 30 days
+                    </span>
+                  </label>
+                </div>
+              )}
 
               {/* Confirm password field (Register only) */}
               {!isLogin && (

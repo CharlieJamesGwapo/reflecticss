@@ -132,15 +132,6 @@ function Dashboard({ user }) {
                 <button onClick={() => handleNavigation('/reviewer-selection')} className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Review</button>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <select value={selectedPeriod} onChange={(e) => setSelectedPeriod(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="year">This Year</option>
-                </select>
-              </div>
-
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 text-gray-400" size={20} />
                 <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 pr-4 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -210,8 +201,28 @@ function Dashboard({ user }) {
             {/* Welcome Card */}
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white text-center shadow-xl">
               <h1 className="text-3xl md:text-4xl font-bold mb-4">Welcome back, {user?.name || 'Learner'}!</h1>
-              <p className="text-lg md:text-xl opacity-90">Ready to continue your CSS learning journey?</p>
-              <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+              <p className="text-lg md:text-xl opacity-90 mb-6">Ready to continue your CSS learning journey?</p>
+              
+              {/* Time Period Selector */}
+              <div className="flex justify-center mb-6">
+                <div className="bg-white bg-opacity-20 rounded-lg p-1 flex space-x-1">
+                  {['today', 'week', 'month'].map(period => (
+                    <button
+                      key={period}
+                      onClick={() => setSelectedPeriod(period)}
+                      className={`px-4 py-2 rounded-md font-medium transition ${
+                        selectedPeriod === period
+                          ? 'bg-white text-blue-600'
+                          : 'text-white hover:bg-white hover:bg-opacity-10'
+                      }`}
+                    >
+                      {period === 'today' ? 'Today' : period === 'week' ? 'This Week' : 'This Month'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button onClick={() => handleNavigation('/lessons')} className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg">Continue Learning</button>
                 <button onClick={() => handleNavigation('/quizzes')} className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:bg-blue-50 transition-colors shadow-lg">Take Quiz</button>
               </div>
@@ -329,96 +340,6 @@ function Dashboard({ user }) {
             </div>
           </div>
         )}
-
-        {/* Footer */}
-        <footer className="bg-white border-t border-gray-200 mt-auto">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
-                <div className="space-y-2">
-                  <Link to="/dashboard" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <BarChart3 className="h-5 w-5" />
-                    <span>Dashboard</span>
-                  </Link>
-                  <Link to="/lessons" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <BookOpen className="h-5 w-5" />
-                    <span>Learn</span>
-                  </Link>
-                  <Link to="/quizzes" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <Zap className="h-5 w-5" />
-                    <span>Quizzes</span>
-                  </Link>
-                  <Link to="/reviewer-selection" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <Eye className="h-5 w-5" />
-                    <span>Review</span>
-                  </Link>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Account</h3>
-                <div className="space-y-2">
-                  <Link to="/profile" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <Settings className="h-5 w-5" />
-                    <span>Account Settings</span>
-                  </Link>
-                  <Link to="/help" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <AlertCircle className="h-5 w-5" />
-                    <span>Help Center</span>
-                  </Link>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Support</h3>
-                <div className="space-y-2">
-                  <Link to="/contact" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <LogOut className="h-5 w-5" />
-                    <span>Contact Us</span>
-                  </Link>
-                  <Link to="/feedback" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                    <AlertCircle className="h-5 w-5" />
-                    <span>Feedback</span>
-                  </Link>
-                </div>
-              </div>
-              <div className="md:col-span-2 lg:col-span-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Legal</h3>
-                  <div className="space-y-2">
-                    <Link to="/privacy" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                      <Lock className="h-5 w-5" />
-                      <span>Privacy Policy</span>
-                    </Link>
-                    <Link to="/terms" className="flex items-center space-x-2 text-gray-600 hover:text-blue-800 transition-colors">
-                      <EyeOff className="h-5 w-5" />
-                      <span>Terms of Service</span>
-                    </Link>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Connect</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <span className="text-sm">Email</span>
-                      <a href="mailto:capstonee2@gmail.com" className="text-blue-600 hover:text-blue-800 font-medium">capstonee2@gmail.com</a>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <span className="text-sm">Phone</span>
-                      <span className="text-blue-600 hover:text-blue-800 font-medium">+1 (555) 123-4567</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <span className="text-sm">Location</span>
-                      <span className="text-blue-600 hover:text-blue-800 font-medium">Thailand</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="text-center text-gray-600 text-sm mt-8">
-              © 2024 RefletiCSS. Made with ❤️ for learners.
-            </div>
-          </div>
-        </footer>
       </main>
     </div>
   );

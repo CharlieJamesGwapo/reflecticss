@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import Auth from './pages/Auth';
+import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Lessons from './pages/Lessons';
 import Flashcards from './pages/Flashcards';
@@ -17,6 +17,7 @@ import ReviewerSelection from './pages/ReviewerSelection';
 import Reviewer from './pages/Reviewer';
 import AccountSettings from './pages/AccountSettings';
 import QuizHistory from './pages/QuizHistory';
+import Courses from './pages/Courses';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -31,7 +32,11 @@ function App() {
     // Check if user is logged in
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('token');
+        // Check both localStorage and sessionStorage for tokens
+        const localToken = localStorage.getItem('token');
+        const sessionToken = sessionStorage.getItem('token');
+        const token = localToken || sessionToken;
+        
         if (token) {
           // Verify token with backend
           const apiUrl = getApiUrl();
@@ -42,7 +47,12 @@ function App() {
             const data = await response.json();
             setUser(data.user);
           } else {
+            // Clear invalid tokens
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('rememberMe');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
           }
         }
       } catch (error) {
@@ -69,9 +79,10 @@ function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {!user ? (
-        // Auth page when not logged in
+        // Auth and Home pages when not logged in
         <Routes>
-          <Route path="/" element={<Auth setUser={setUser} />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth setUser={setUser} />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       ) : (
@@ -81,6 +92,7 @@ function App() {
           <main className="pt-16 sm:pt-20 w-full flex-grow">
             <Routes>
               <Route path="/" element={<Dashboard user={user} />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/lessons" element={<Lessons />} />
               <Route path="/lessons/:id" element={<LessonDetail />} />
               <Route path="/flashcards" element={<Flashcards />} />
@@ -94,10 +106,10 @@ function App() {
               <Route path="/reviewer/:coc" element={<Reviewer />} />
               <Route path="/account-settings" element={<AccountSettings user={user} setUser={setUser} />} />
               <Route path="/quiz-history" element={<QuizHistory />} />
+              <Route path="/courses" element={<Courses />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
-          <Footer />
         </div>
       )}
     </Router>
