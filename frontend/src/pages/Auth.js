@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, Loader, Upload, X, CheckCircle, AlertCircle, Sparkles, Zap, Shield } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -12,7 +12,6 @@ function Auth({ setUser }) {
   const [photoFile, setPhotoFile] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [focusedField, setFocusedField] = useState('');
-  const [successAnimation, setSuccessAnimation] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -259,12 +258,12 @@ function Auth({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-500 to-pink-500 flex items-center justify-center p-3 sm:p-4 py-8 sm:py-0 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-blue-500 to-blue-600 flex items-center justify-center p-3 sm:p-4 py-8 sm:py-0 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-64 sm:w-96 h-64 sm:h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-64 sm:w-96 h-64 sm:h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white rounded-full opacity-10 animate-pulse-glow"></div>
       </div>
 
@@ -288,7 +287,7 @@ function Auth({ setUser }) {
       <div className={`relative w-full max-w-md transition-all duration-500 ${isAnimating ? 'scale-95 opacity-0' : 'scale-100 opacity-100 animate-bounce-in'}`}>
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden backdrop-blur-lg bg-opacity-95 transform hover:scale-105 transition-transform duration-300">
           {/* Header with Logo */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-size-200 animate-gradient-shift px-4 sm:px-6 py-8 sm:py-10 text-center flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-yellow-400 via-blue-500 to-blue-600 bg-size-200 animate-gradient-shift px-4 sm:px-6 py-8 sm:py-10 text-center flex flex-col items-center justify-center relative overflow-hidden">
             {/* Animated sparkles */}
             <div className="absolute inset-0">
               {[...Array(3)].map((_, i) => (
@@ -387,10 +386,10 @@ function Auth({ setUser }) {
                         </div>
                       </div>
                     ) : (
-                      <label className="w-full flex items-center justify-center px-3 sm:px-4 py-4 sm:py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 hover:scale-105 group">
+                      <label className="w-full flex items-center justify-center px-3 sm:px-4 py-4 sm:py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-yellow-500 hover:bg-yellow-50 transition-all duration-300 hover:scale-105 group">
                         <div className="flex flex-col items-center">
-                          <Upload className="text-gray-400 mb-2 group-hover:text-blue-500 transition-colors group-hover:animate-bounce" size={20} />
-                          <span className="text-xs sm:text-sm text-gray-600 group-hover:text-blue-600 transition-colors">Click to upload photo</span>
+                          <Upload className="text-gray-400 mb-2 group-hover:text-yellow-500 transition-colors group-hover:animate-bounce" size={20} />
+                          <span className="text-xs sm:text-sm text-gray-600 group-hover:text-yellow-600 transition-colors">Click to upload photo</span>
                           <span className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</span>
                         </div>
                         <input
@@ -507,7 +506,7 @@ function Auth({ setUser }) {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full mt-4 sm:mt-6 bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-size-200 animate-gradient-shift text-white font-bold py-2.5 sm:py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base relative overflow-hidden group ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:scale-105 hover:shadow-purple-200'}`}
+                className={`w-full mt-4 sm:mt-6 bg-gradient-to-r from-yellow-400 via-blue-500 to-blue-600 bg-size-200 animate-gradient-shift text-white font-bold py-2.5 sm:py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base relative overflow-hidden group ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:scale-105 hover:shadow-yellow-200'}`}
               >
                 <span className="relative z-10">
                   {loading ? (
@@ -568,7 +567,7 @@ function Auth({ setUser }) {
           </div>
 
           {/* Footer with security badge */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-4 sm:px-6 py-3 sm:py-4 text-center border-t border-gray-200 animate-fade-in">
+          <div className="bg-gradient-to-r from-gray-50 to-yellow-50 px-4 sm:px-6 py-3 sm:py-4 text-center border-t border-gray-200 animate-fade-in">
             <div className="flex items-center justify-center gap-2">
               <Shield size={16} className="text-green-500" />
               <p className="text-gray-600 text-xs sm:text-xs">

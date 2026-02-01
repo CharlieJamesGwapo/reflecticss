@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronLeft, CheckCircle } from 'lucide-react';
 
 function QuizDetail() {
   const { id } = useParams();

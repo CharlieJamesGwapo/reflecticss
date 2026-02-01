@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Award, Clock, Users, Star, CheckCircle, Lock, Play } from 'lucide-react';
+import { BookOpen, Clock, Users, Star, CheckCircle, Lock, Play } from 'lucide-react';
 
 function Courses() {
   const [courses, setCourses] = useState([]);

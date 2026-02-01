@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, ChevronDown, ChevronUp, ArrowLeft, Search, Filter, Network, Shield, Wifi, FileText, Lock, Monitor, HardDrive, Cpu, Router, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, ArrowLeft, Search, Network, Shield, FileText, Monitor, Router, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 function COC2() {
   const navigate = useNavigate();
   const [terms, setTerms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [expandedTerms, setExpandedTerms] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -14,8 +13,7 @@ function COC2() {
   const [currentPage, setCurrentPage] = useState(1);
   const [termsPerPage] = useState(10);
 
-  // Sample COC2 terms data
-  const sampleTerms = [
+  const sampleTerms = React.useMemo(() => [
     {
       id: 1,
       term: 'Network Topology',
@@ -136,7 +134,7 @@ function COC2() {
       image: '/security.png',
       examples: ['Firewalls', 'Encryption', 'Authentication', 'Access control']
     }
-  ];
+  ], []);
 
   useEffect(() => {
     // Load sample data
@@ -147,7 +145,7 @@ function COC2() {
       setCategories(uniqueCategories);
       setLoading(false);
     }, 500);
-  }, []);
+  }, [sampleTerms]);
 
   const toggleTerm = (termId) => {
     setExpandedTerms(prev => ({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BookOpen, ChevronDown, ChevronUp, ArrowLeft, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -17,11 +17,7 @@ function Reviewer() {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-  useEffect(() => {
-    fetchTerms();
-  }, [coc]);
-
-  const fetchTerms = async () => {
+  const fetchTerms = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -39,7 +35,11 @@ function Reviewer() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, coc]);
+
+  useEffect(() => {
+    fetchTerms();
+  }, [fetchTerms]);
 
   const toggleTerm = (termId) => {
     setExpandedTerms(prev => ({

@@ -107,7 +107,7 @@ function Navbar({ user, setUser }) {
   };
 
   return (
-    <nav className="fixed top-0 w-full bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg z-50">
+    <nav className="fixed top-0 w-full bg-gradient-to-r from-yellow-400 to-blue-600 shadow-lg z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -125,23 +125,23 @@ function Navbar({ user, setUser }) {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-1">
-            <Link to="/" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
+            <Link to="/" className="flex items-center gap-2 text-white hover:text-yellow-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <Home size={18} />
               Dashboard
             </Link>
-            <Link to="/reviewer-selection" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
+            <Link to="/reviewer-selection" className="flex items-center gap-2 text-white hover:text-yellow-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <BookOpen size={18} />
               Learn
             </Link>
-            <Link to="/coc-selection" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
+            <Link to="/coc-selection" className="flex items-center gap-2 text-white hover:text-yellow-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <BarChart3 size={18} />
               Quizzes
             </Link>
-            <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
+            <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:text-yellow-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <TrendingUp size={18} />
               Progress
             </Link>
-            <Link to="/courses" className="flex items-center gap-2 text-white hover:text-blue-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
+            <Link to="/courses" className="flex items-center gap-2 text-white hover:text-yellow-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
               <Award size={18} />
               Courses
             </Link>
@@ -157,14 +157,14 @@ function Navbar({ user, setUser }) {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent text-white placeholder-blue-100 ml-2 outline-none w-40"
+                  className="bg-transparent text-white placeholder-yellow-100 ml-2 outline-none w-40"
                   autoFocus
                 />
               </div>
             ) : (
               <button
                 onClick={() => setSearchOpen(true)}
-                className="text-white hover:text-blue-100 transition p-2"
+                className="text-white hover:text-yellow-100 transition p-2"
               >
                 <Search size={20} />
               </button>
@@ -177,7 +177,7 @@ function Navbar({ user, setUser }) {
             <div className="relative" ref={settingsRef}>
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="text-white hover:text-blue-100 transition p-2"
+                className="text-white hover:text-yellow-100 transition p-2"
                 title="Settings Menu"
               >
                 <MoreVertical size={20} />
@@ -186,21 +186,21 @@ function Navbar({ user, setUser }) {
               {/* Settings Dropdown */}
               {isSettingsOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                  <div className="px-4 py-3 border-b border-gray-200 bg-yellow-50">
                     <p className="text-gray-900 font-semibold text-sm">Settings</p>
                   </div>
                   <div className="py-2">
                     <Link
                       to="/account-settings"
-                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 transition"
                       onClick={() => setIsSettingsOpen(false)}
                     >
-                      <Settings size={18} className="text-blue-600" />
+                      <Settings size={18} className="text-yellow-600" />
                       <span className="text-sm font-medium">Account Settings</span>
                     </Link>
                     <Link
                       to="/quiz-history"
-                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 transition"
                       onClick={() => setIsSettingsOpen(false)}
                     >
                       <TrendingUp size={18} className="text-green-600" />
@@ -211,7 +211,7 @@ function Navbar({ user, setUser }) {
                         // Add theme toggle functionality here
                         setIsSettingsOpen(false);
                       }}
-                      className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+                      className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 transition"
                     >
                       <Award size={18} className="text-purple-600" />
                       <span className="text-sm font-medium">Achievements</span>
@@ -223,7 +223,7 @@ function Navbar({ user, setUser }) {
             
             {user && (
               <div className="relative group">
-                <button className="relative text-white hover:text-blue-100 transition p-2">
+                <button className="relative text-white hover:text-yellow-100 transition p-2">
                   <Bell size={20} />
                   {unreadCount > 0 && (
                     <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
@@ -234,7 +234,7 @@ function Navbar({ user, setUser }) {
                 
                 {/* Notifications Dropdown */}
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50 hidden group-hover:block max-h-96 overflow-y-auto">
-                  <div className="px-4 py-3 border-b border-gray-200 bg-blue-50">
+                  <div className="px-4 py-3 border-b border-gray-200 bg-yellow-50">
                     <p className="text-gray-900 font-semibold text-sm">Notifications</p>
                   </div>
                   {notifications.length > 0 ? (
@@ -266,7 +266,7 @@ function Navbar({ user, setUser }) {
                 {/* Profile Photo Button (Like Instagram) */}
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="w-10 h-10 rounded-full border-2 border-white hover:border-blue-100 transition overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-sm"
+                  className="w-10 h-10 rounded-full border-2 border-white hover:border-yellow-100 transition overflow-hidden flex items-center justify-center bg-gradient-to-br from-yellow-400 to-blue-600 text-white font-bold text-sm"
                   title={user.name}
                 >
                   {user.profile_photo ? (
@@ -280,9 +280,9 @@ function Navbar({ user, setUser }) {
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl z-50 overflow-hidden">
                     {/* Profile Header Card */}
-                    <div className="px-6 py-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                    <div className="px-6 py-6 bg-gradient-to-r from-yellow-400 to-blue-600 text-white">
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full border-3 border-white flex items-center justify-center bg-blue-500 text-white font-bold text-2xl overflow-hidden shadow-lg">
+                        <div className="w-16 h-16 rounded-full border-3 border-white flex items-center justify-center bg-yellow-500 text-white font-bold text-2xl overflow-hidden shadow-lg">
                           {user.profile_photo ? (
                             <img src={user.profile_photo} alt={user.name} className="w-full h-full object-cover" />
                           ) : (
@@ -291,7 +291,7 @@ function Navbar({ user, setUser }) {
                         </div>
                         <div className="flex-1">
                           <p className="text-white font-bold text-base">{user.name}</p>
-                          <p className="text-blue-100 text-xs mt-1">{user.email}</p>
+                          <p className="text-yellow-100 text-xs mt-1">{user.email}</p>
                         </div>
                       </div>
                     </div>
@@ -300,10 +300,10 @@ function Navbar({ user, setUser }) {
                     <div className="py-2">
                       <Link
                         to="/account-settings"
-                        className="flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-blue-50 transition border-b border-gray-100"
+                        className="flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-yellow-50 transition border-b border-gray-100"
                         onClick={() => setIsProfileOpen(false)}
                       >
-                        <Settings size={18} className="text-blue-600" />
+                        <Settings size={18} className="text-yellow-600" />
                         <div>
                           <p className="text-sm font-semibold">Account Settings</p>
                           <p className="text-xs text-gray-500">Manage your profile</p>
@@ -327,7 +327,7 @@ function Navbar({ user, setUser }) {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">
+              <Link to="/login" className="bg-yellow-400 text-blue-900 px-6 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition">
                 Login
               </Link>
             )}
@@ -345,33 +345,33 @@ function Navbar({ user, setUser }) {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2">
-            <Link to="/" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+            <Link to="/" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
               <Home size={18} />
               Dashboard
             </Link>
-            <Link to="/reviewer-selection" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+            <Link to="/reviewer-selection" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
               <BookOpen size={18} />
               Learn
             </Link>
-            <Link to="/coc-selection" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+            <Link to="/coc-selection" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
               <BarChart3 size={18} />
               Quizzes
             </Link>
-            <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+            <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
               <TrendingUp size={18} />
               Progress
             </Link>
-            <Link to="/courses" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+            <Link to="/courses" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
               <Award size={18} />
               Courses
             </Link>
             {user && (
               <>
-                <Link to="/profile" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+                <Link to="/profile" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
                   <User size={18} />
                   My Profile
                 </Link>
-                <Link to="/account-settings" className="flex items-center gap-2 text-white hover:bg-blue-700 px-4 py-2 rounded transition">
+                <Link to="/account-settings" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
                   <Settings size={18} />
                   Account Settings
                 </Link>
@@ -386,7 +386,7 @@ function Navbar({ user, setUser }) {
                 <span>Logout</span>
               </button>
             ) : (
-              <Link to="/login" className="block text-white hover:bg-blue-700 px-4 py-2 rounded transition">Login</Link>
+              <Link to="/login" className="block text-white hover:bg-yellow-600 px-4 py-2 rounded transition">Login</Link>
             )}
           </div>
         )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, BarChart3, Clock, Calendar, Flame, TrendingUp, Award, Target, Activity, Users, Settings, Bell, LogOut, Menu, X, ChevronRight, Star, Hash, Download, RefreshCw, Filter, Search, UserPlus, Eye, EyeOff, Lock, Unlock, CheckCircle, AlertCircle, ArrowUp, ArrowDown, Play, Pause, SkipForward, FastForward, Trophy, TrendingDown, Minus } from 'lucide-react';
+import { BookOpen, Zap, BarChart3, Clock, Calendar, Flame, TrendingUp, Award, Target, Users, Bell, LogOut, Menu, X, ChevronRight, Search, UserPlus, Eye, CheckCircle } from 'lucide-react';
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
@@ -20,9 +20,7 @@ function Dashboard({ user }) {
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState('overview');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';

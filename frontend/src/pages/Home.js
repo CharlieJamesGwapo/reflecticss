@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Zap, Award, Target, ArrowRight, Star, Users, Clock, CheckCircle } from 'lucide-react';
+import { BookOpen, Zap, Award, Target, ArrowRight, Star, CheckCircle } from 'lucide-react';
 
 function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-blue-500 to-blue-600">
       {/* Hero Section */}
       <section className="px-4 py-20 md:py-32">
         <div className="max-w-7xl mx-auto text-center">
@@ -30,14 +30,14 @@ function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link 
               to="/auth" 
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl"
+              className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-xl"
             >
               Get Started Now
               <ArrowRight className="inline-block ml-2" size={20} />
             </Link>
             <Link 
               to="/dashboard" 
-              className="bg-transparent border-4 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-blue-600 transition-all transform hover:scale-105 shadow-xl"
+              className="bg-transparent border-4 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-400 hover:text-blue-900 transition-all transform hover:scale-105 shadow-xl"
             >
               View Dashboard
             </Link>
@@ -169,7 +169,7 @@ function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="px-4 py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="px-4 py-20 bg-gradient-to-r from-yellow-400 to-blue-600">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Start Your Learning Journey?
@@ -179,7 +179,7 @@ function Home() {
           </p>
           <Link 
             to="/auth" 
-            className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl inline-flex items-center"
+            className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-xl inline-flex items-center"
           >
             Get Started Free
             <ArrowRight className="ml-2" size={20} />

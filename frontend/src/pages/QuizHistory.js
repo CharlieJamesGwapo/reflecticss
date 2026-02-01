@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Calendar, BarChart3, Archive, Trash2, Eye } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -13,12 +13,7 @@ function QuizHistory() {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-  // Fetch quiz history on mount
-  useEffect(() => {
-    fetchQuizHistory();
-  }, []);
-
-  const fetchQuizHistory = async () => {
+  const fetchQuizHistory = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/users/quiz-history`, {
@@ -30,12 +25,17 @@ function QuizHistory() {
         setQuizHistory(data.history || []);
         setArchivedQuizzes(data.archived || []);
       }
-    } catch (err) {
-      console.error('Error fetching quiz history:', err);
+    } catch (error) {
+      console.error('Error fetching quiz history:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  // Fetch quiz history on mount
+  useEffect(() => {
+    fetchQuizHistory();
+  }, [fetchQuizHistory]);
 
   const handleDeleteQuiz = async (quizId) => {
     const result = await Swal.fire({
