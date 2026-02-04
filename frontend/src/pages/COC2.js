@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, ChevronDown, ChevronUp, ArrowLeft, Search, Network, Shield, FileText, Monitor, Router, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, ArrowLeft, Search, Network, Shield, Monitor, Router, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 function COC2() {
