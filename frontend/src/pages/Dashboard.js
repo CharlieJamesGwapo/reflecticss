@@ -119,7 +119,6 @@ function Dashboard({ user }) {
                 <BookOpen className="text-white" size={24} />
               </div>
               <span className="ml-3 text-xl font-bold text-gray-900">RefletiCSS</span>
-              <span className="ml-2 text-lg text-blue-600">Dashboard</span>
             </div>
 
             <nav className="hidden md:flex items-center space-x-8">
