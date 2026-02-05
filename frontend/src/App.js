@@ -17,7 +17,7 @@ import ReviewerSelection from './pages/ReviewerSelection';
 import Reviewer from './pages/Reviewer';
 import AccountSettings from './pages/AccountSettings';
 import QuizHistory from './pages/QuizHistory';
-import Courses from './pages/Courses';
+import Achievements from './pages/Achievements';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -67,7 +67,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-400 to-blue-600">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
           <p className="text-white text-xl font-semibold">Loading...</p>
@@ -87,7 +87,7 @@ function App() {
         </Routes>
       ) : (
         // App pages when logged in
-        <div className="min-h-screen w-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex flex-col">
+        <div className="min-h-screen w-full bg-gradient-to-br from-yellow-50 to-blue-50 flex flex-col">
           <Navbar user={user} setUser={setUser} />
           <main className="pt-16 sm:pt-20 w-full flex-grow">
             <Routes>
@@ -106,7 +106,7 @@ function App() {
               <Route path="/reviewer/:coc" element={<Reviewer />} />
               <Route path="/account-settings" element={<AccountSettings user={user} setUser={setUser} />} />
               <Route path="/quiz-history" element={<QuizHistory />} />
-              <Route path="/courses" element={<Courses />} />
+              <Route path="/achievements" element={<Achievements />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>

@@ -23,7 +23,7 @@ function COCSelection() {
       title: 'COC 2',
       description: 'Deep dive into advanced CSS concepts and techniques',
       icon: Zap,
-      color: 'from-blue-500 to-blue-600',
+      color: 'from-yellow-400 to-blue-600',
       questions: 35,
       topics: 'Advanced CSS, Animations'
     },
@@ -72,11 +72,11 @@ function COCSelection() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-8 md:py-12 px-4 md:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-blue-50 py-8 md:py-12 px-4 md:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 md:mb-16">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-blue-900 mb-3 md:mb-4">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-yellow-400 to-blue-600 bg-clip-text text-transparent mb-3 md:mb-4">
             Choose Your Course
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
@@ -91,7 +91,7 @@ function COCSelection() {
             return (
               <div
                 key={coc.id}
-                className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-t-4 border-blue-600 flex flex-col h-full"
+                className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-t-4 border-yellow-400 flex flex-col h-full"
               >
                 {/* Blue Header */}
                 <div className={`h-32 bg-gradient-to-r ${coc.color} relative overflow-hidden flex items-center justify-center flex-shrink-0`}>
@@ -106,7 +106,7 @@ function COCSelection() {
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 py-3 border-y border-gray-100">
                     <div className="text-center">
-                      <p className="text-lg md:text-xl font-bold text-blue-700">{coc.questions}</p>
+                      <p className="text-lg md:text-xl font-bold text-yellow-500">{coc.questions}</p>
                       <p className="text-xs text-gray-600">Questions</p>
                     </div>
                     <div className="text-center">
@@ -135,21 +135,21 @@ function COCSelection() {
         </div>
 
         {/* Info Section */}
-        <div className="bg-white rounded-2xl p-6 md:p-8 border-l-4 border-blue-600 shadow-sm">
-          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 md:mb-8">How It Works</h2>
+        <div className="bg-white rounded-2xl p-6 md:p-8 border-l-4 border-yellow-400 shadow-sm">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-400 to-blue-600 bg-clip-text text-transparent mb-6 md:mb-8">How It Works</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-blue-50 rounded-lg p-4 md:p-6 border-l-4 border-blue-600 hover:shadow-md transition-shadow">
-              <div className="text-3xl md:text-4xl font-bold text-blue-700 mb-3">1</div>
+            <div className="bg-yellow-50 rounded-lg p-4 md:p-6 border-l-4 border-yellow-400 hover:shadow-md transition-shadow">
+              <div className="text-3xl md:text-4xl font-bold text-yellow-500 mb-3">1</div>
               <h3 className="font-bold text-gray-900 mb-2 text-lg">Choose a Course</h3>
               <p className="text-gray-600 text-sm">Select from COC 1, 2, or 3 based on your skill level</p>
             </div>
             <div className="bg-blue-50 rounded-lg p-4 md:p-6 border-l-4 border-blue-600 hover:shadow-md transition-shadow">
-              <div className="text-3xl md:text-4xl font-bold text-blue-700 mb-3">2</div>
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-3">2</div>
               <h3 className="font-bold text-gray-900 mb-2 text-lg">Take the Quiz</h3>
               <p className="text-gray-600 text-sm">Answer questions and get instant feedback on your progress</p>
             </div>
-            <div className="bg-blue-50 rounded-lg p-4 md:p-6 border-l-4 border-blue-600 hover:shadow-md transition-shadow">
-              <div className="text-3xl md:text-4xl font-bold text-blue-700 mb-3">3</div>
+            <div className="bg-yellow-50 rounded-lg p-4 md:p-6 border-l-4 border-yellow-400 hover:shadow-md transition-shadow">
+              <div className="text-3xl md:text-4xl font-bold text-yellow-500 mb-3">3</div>
               <h3 className="font-bold text-gray-900 mb-2 text-lg">Track Progress</h3>
               <p className="text-gray-600 text-sm">Monitor your scores and improve your skills over time</p>
             </div>

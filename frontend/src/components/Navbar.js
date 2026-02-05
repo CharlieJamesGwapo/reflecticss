@@ -141,10 +141,6 @@ function Navbar({ user, setUser }) {
               <TrendingUp size={18} />
               Progress
             </Link>
-            <Link to="/courses" className="flex items-center gap-2 text-white hover:text-yellow-100 px-4 py-2 rounded-lg transition font-medium border-b-2 border-transparent hover:border-white">
-              <Award size={18} />
-              Courses
-            </Link>
           </div>
 
           {/* Search Bar */}
@@ -360,10 +356,6 @@ function Navbar({ user, setUser }) {
             <Link to="/quiz-history" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
               <TrendingUp size={18} />
               Progress
-            </Link>
-            <Link to="/courses" className="flex items-center gap-2 text-white hover:bg-yellow-600 px-4 py-2 rounded transition">
-              <Award size={18} />
-              Courses
             </Link>
             {user && (
               <>

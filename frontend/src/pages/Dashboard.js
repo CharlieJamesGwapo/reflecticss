@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, BarChart3, Clock, Calendar, Flame, TrendingUp, Award, Target, Users, Bell, LogOut, Menu, X, ChevronRight, Search, UserPlus, Eye, CheckCircle } from 'lucide-react';
+import { BookOpen, Zap, BarChart3, Clock, Calendar, Flame, TrendingUp, Award, Target, Users, Bell, LogOut, Menu, X, ChevronRight, Search, UserPlus, Eye, CheckCircle, Activity, Trophy, Star } from 'lucide-react';
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
@@ -25,22 +25,60 @@ function Dashboard({ user }) {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = useCallback(async (period = 'week') => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`${API_URL}/api/users/stats`, {
+      const response = await fetch(`${API_URL}/api/users/stats?period=${period}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.ok) {
         const data = await response.json();
-        setStats(data);
+        setStats(prevStats => ({
+          ...prevStats,
+          ...data,
+          performanceMetrics: {
+            accuracy: data.averageScore || 0,
+            speed: data.lessonsCompleted ? Math.round((data.lessonsCompleted / 30) * 10) / 10 : 0,
+            consistency: data.streakDays ? Math.min(100, data.streakDays * 10) : 0,
+            improvement: data.averageScore ? Math.round((data.averageScore - 70) * 0.5) : 0
+          }
+        }));
+      } else {
+        // Set default values if API fails
+        setStats(prevStats => ({
+          ...prevStats,
+          lessonsCompleted: 0,
+          quizzesAttempted: 0,
+          averageScore: 0,
+          streakDays: 0,
+          performanceMetrics: {
+            accuracy: 0,
+            speed: 0,
+            consistency: 0,
+            improvement: 0
+          }
+        }));
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      // Set fallback values
+      setStats(prevStats => ({
+        ...prevStats,
+        lessonsCompleted: 0,
+        quizzesAttempted: 0,
+        averageScore: 0,
+        streakDays: 0,
+        performanceMetrics: {
+          accuracy: 0,
+          speed: 0,
+          consistency: 0,
+          improvement: 0
+        }
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -52,8 +90,12 @@ function Dashboard({ user }) {
   }, []);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    fetchDashboardData(selectedPeriod);
+  }, [fetchDashboardData, selectedPeriod]);
+
+  const handlePeriodChange = (period) => {
+    setSelectedPeriod(period);
+  };
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -102,88 +144,7 @@ function Dashboard({ user }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Mobile Menu Toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 bg-white rounded-lg shadow-lg border border-gray-200">
-          {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Navigation Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <BookOpen className="text-white" size={24} />
-              </div>
-              <span className="ml-3 text-xl font-bold text-gray-900">RefletiCSS</span>
-            </div>
-
-            <nav className="hidden md:flex items-center space-x-8">
-              <div className="flex items-center space-x-4">
-                <button onClick={() => handleNavigation('/dashboard')} className="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Overview</button>
-                <button onClick={() => handleNavigation('/lessons')} className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Lessons</button>
-                <button onClick={() => handleNavigation('/quizzes')} className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Quizzes</button>
-                <button onClick={() => handleNavigation('/reviewer-selection')} className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Review</button>
-              </div>
-
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 text-gray-400" size={20} />
-                <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 pr-4 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-
-              <div className="relative">
-                <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-2 text-gray-600 hover:text-blue-600 rounded-md transition-colors">
-                  <Bell className="h-5 w-5" />
-                  {stats.achievements && stats.achievements.length > 0 && (
-                    <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full text-white text-xs font-bold flex items-center justify-center">
-                      {stats.achievements.length}
-                    </span>
-                  )}
-                </button>
-              </div>
-
-              <div className="relative">
-                <button onClick={() => setShowNotifications(!showNotifications)} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 rounded-md px-3 py-2 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center">
-                    {user?.profile_photo ? (
-                      <img src={user.profile_photo} alt={user.name} className="w-full h-full rounded-full object-cover" />
-                    ) : (
-                      <UserPlus className="text-white" size={20} />
-                    )}
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Menu */}
-      {showMobileMenu && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
-          <div className="bg-white w-64 h-full shadow-xl">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-lg font-bold text-gray-900">Menu</span>
-                <button onClick={() => setShowMobileMenu(false)} className="p-2 text-gray-600 hover:text-gray-900">
-                  <X size={20} />
-                </button>
-              </div>
-              <div className="space-y-2">
-                <button onClick={() => handleNavigation('/dashboard')} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Overview</button>
-                <button onClick={() => handleNavigation('/lessons')} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Lessons</button>
-                <button onClick={() => handleNavigation('/quizzes')} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Quizzes</button>
-                <button onClick={() => handleNavigation('/reviewer-selection')} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Review</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-blue-50">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isLoading ? (
@@ -196,7 +157,7 @@ function Dashboard({ user }) {
         ) : (
           <div className="space-y-6">
             {/* Welcome Card */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white text-center shadow-xl">
+            <div className="bg-gradient-to-r from-yellow-400 to-blue-600 rounded-xl p-8 text-white text-center shadow-xl">
               <h1 className="text-3xl md:text-4xl font-bold mb-4">Welcome back, {user?.name || 'Learner'}!</h1>
               <p className="text-lg md:text-xl opacity-90 mb-6">Ready to continue your CSS learning journey?</p>
               
@@ -206,7 +167,7 @@ function Dashboard({ user }) {
                   {['today', 'week', 'month'].map(period => (
                     <button
                       key={period}
-                      onClick={() => setSelectedPeriod(period)}
+                      onClick={() => handlePeriodChange(period)}
                       className={`px-4 py-2 rounded-md font-medium transition ${
                         selectedPeriod === period
                           ? 'bg-white text-blue-600'
@@ -219,14 +180,14 @@ function Dashboard({ user }) {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onClick={() => handleNavigation('/lessons')} className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg">Continue Learning</button>
-                <button onClick={() => handleNavigation('/quizzes')} className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:bg-blue-50 transition-colors shadow-lg">Take Quiz</button>
+              {/* Period Indicator */}
+              <div className="text-center text-white text-sm opacity-75">
+                Showing data for {selectedPeriod === 'today' ? 'today' : selectedPeriod === 'week' ? 'this week' : 'this month'}
               </div>
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-600">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Learning Progress</h3>
@@ -239,77 +200,87 @@ function Dashboard({ user }) {
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Lessons Completed</span>
-                    <span className="font-semibold text-gray-900">{stats.lessonsCompleted}</span>
+                    <span className="font-semibold text-gray-900">{stats.lessonsCompleted || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Quizzes Taken</span>
-                    <span className="font-semibold text-gray-900">{stats.quizzesAttempted}</span>
+                    <span className="font-semibold text-gray-900">{stats.quizzesAttempted || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Study Streak</span>
-                    <span className="font-semibold text-orange-600">{stats.streakDays} days</span>
+                    <span className="font-semibold text-orange-600">{stats.streakDays || 0} days</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-purple-600">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-600">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Performance Metrics</h3>
-                  <BarChart3 className="text-purple-600 h-5 w-5" />
+                  <BarChart3 className="text-blue-600 h-5 w-5" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{stats.averageScore}%</div>
+                    <div className="text-2xl font-bold text-blue-600">{stats.averageScore || 0}%</div>
                     <div className="text-sm text-gray-600">Avg Score</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{stats.performanceMetrics.speed}</div>
+                    <div className="text-2xl font-bold text-green-600">{stats.performanceMetrics?.speed || 0}</div>
                     <div className="text-sm text-gray-600">Speed (lessons/day)</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-600">{stats.performanceMetrics.consistency}%</div>
+                    <div className="text-2xl font-bold text-yellow-600">{stats.performanceMetrics?.consistency || 0}%</div>
                     <div className="text-sm text-gray-600">Consistency</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600">+{stats.performanceMetrics.improvement}%</div>
+                    <div className="text-2xl font-bold text-red-600">+{stats.performanceMetrics?.improvement || 0}%</div>
                     <div className="text-sm text-gray-600">Improvement</div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-orange-600">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Recent Achievements</h3>
-                  <Award className="text-orange-600 h-5 w-5" />
+                  <Award className="text-yellow-600 h-5 w-5" />
                 </div>
                 <div className="flex justify-between items-center">
                   <div>
-                    <div className="text-2xl font-bold text-orange-600">{mockData.achievements.filter(a => a.unlocked).length}</div>
+                    <div className="text-2xl font-bold text-yellow-600">{stats.achievements?.filter(a => a.unlocked).length || 0}</div>
                     <div className="text-sm text-gray-600">Unlocked</div>
                   </div>
-                  <Link to="/achievements" className="text-blue-600 hover:text-blue-800 text-sm font-medium">View All →</Link>
+                  <button 
+                    onClick={() => handleNavigation('/achievements')}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                  >
+                    View All <ChevronRight size={16} />
+                  </button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  {mockData.achievements.slice(0, 4).map(achievement => (
-                    <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${achievement.unlocked ? 'bg-green-100' : 'bg-gray-200'}`}>
-                        {achievement.icon === 'Zap' && <Zap className={`w-6 h-6 ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'}`} />}
-                        {achievement.icon === 'Award' && <Award className={`w-6 h-6 ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'}`} />}
-                        {achievement.icon === 'Flame' && <Flame className={`w-6 h-6 ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'}`} />}
-                        {achievement.icon === 'Target' && <Target className={`w-6 h-6 ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'}`} />}
-                        {achievement.icon === 'Users' && <Users className={`w-6 h-6 ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'}`} />}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
-                        <p className="text-sm text-gray-600">{achievement.description}</p>
-                        <div className="mt-2">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full transition-all duration-300" style={{ width: `${achievement.progress}%` }}></div>
+                <div className="grid grid-cols-1 gap-4 mt-4">
+                  {(stats.achievements || []).slice(0, 2).map(achievement => {
+                    const IconComponent = achievement.icon === 'Zap' ? Zap :
+                                       achievement.icon === 'Award' ? Award :
+                                       achievement.icon === 'Flame' ? Flame :
+                                       achievement.icon === 'Target' ? Target :
+                                       achievement.icon === 'Users' ? Users : Award;
+                    
+                    return (
+                      <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                           onClick={() => handleNavigation('/achievements')}>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${achievement.unlocked ? 'bg-green-100' : 'bg-gray-200'}`}>
+                          <IconComponent className={`w-6 h-6 ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'}`} />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
+                          <p className="text-sm text-gray-600">{achievement.description}</p>
+                          <div className="mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-green-500 h-2 rounded-full transition-all duration-300" style={{ width: `${achievement.progress}%` }}></div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -333,6 +304,40 @@ function Dashboard({ user }) {
                     <p className="text-base sm:text-lg font-bold text-blue-900 font-mono">{formattedTime}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                <Bell className="text-blue-600 h-5 w-5" />
+              </div>
+              <div className="space-y-3">
+                {(stats.recentActivity || []).slice(0, 3).map((activity, index) => {
+                  const ActivityIcon = activity.icon === 'CheckCircle' ? CheckCircle :
+                                    activity.icon === 'BookOpen' ? BookOpen :
+                                    activity.icon === 'Award' ? Award :
+                                    activity.icon === 'LogOut' ? LogOut :
+                                    activity.icon === 'Eye' ? Eye : Activity;
+                  
+                  return (
+                    <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <ActivityIcon className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">{activity.description}</p>
+                        <p className="text-xs text-gray-500">{activity.time}</p>
+                      </div>
+                      {activity.score && (
+                        <div className="text-sm font-semibold text-green-600">
+                          {activity.score}%
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

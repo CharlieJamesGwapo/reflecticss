@@ -14,7 +14,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fbbf24 0%, #3b82f6 100%);
   min-height: 100vh;
 }
 
@@ -39,11 +39,11 @@ code {
 }
 
 .btn-primary {
-  @apply px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105;
+  @apply px-6 py-3 bg-gradient-to-r from-yellow-400 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 border-2 border-blue-500;
+  @apply px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 border-2 border-yellow-400;
 }
 
 @keyframes blob {
@@ -185,7 +185,7 @@ html {
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(135deg, #f59e0b 0%, #1e40af 100%);
     color: #e0e0e0;
   }
 }
