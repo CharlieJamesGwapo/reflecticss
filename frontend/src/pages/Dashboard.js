@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, BarChart3, Clock, Calendar, Flame, TrendingUp, Award, Target, Users, Bell, LogOut, Menu, X, ChevronRight, Search, UserPlus, Eye, CheckCircle, Activity, Trophy, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Zap, BarChart3, Clock, Calendar, Flame, TrendingUp, Award, Target, Users, Bell, LogOut, ChevronRight, Eye, CheckCircle, Activity } from 'lucide-react';
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
@@ -18,10 +18,7 @@ function Dashboard({ user }) {
   });
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [selectedPeriod, setSelectedPeriod] = useState('week');
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -99,7 +96,6 @@ function Dashboard({ user }) {
 
   const handleNavigation = (path) => {
     navigate(path);
-    setShowMobileMenu(false);
   };
 
   const formattedDate = currentDateTime.toLocaleDateString('en-US', {
@@ -109,39 +105,6 @@ function Dashboard({ user }) {
   const formattedTime = currentDateTime.toLocaleTimeString('en-US', {
     hour: '2-digit', minute: '2-digit', second: '2-digit'
   });
-
-  const mockData = {
-    weeklyProgress: [
-      { day: 'Mon', lessons: 3, quizzes: 2, score: 85 },
-      { day: 'Tue', lessons: 5, quizzes: 3, score: 92 },
-      { day: 'Wed', lessons: 2, quizzes: 4, score: 78 },
-      { day: 'Thu', lessons: 4, quizzes: 2, score: 88 },
-      { day: 'Fri', lessons: 6, quizzes: 5, score: 95 },
-      { day: 'Sat', lessons: 3, quizzes: 1, score: 82 },
-      { day: 'Sun', lessons: 1, quizzes: 0, score: 0 }
-    ],
-    achievements: [
-      { id: 1, title: 'Fast Learner', description: 'Complete 10 lessons in one week', icon: Zap, unlocked: true, progress: 100 },
-      { id: 2, title: 'Quiz Master', description: 'Score 90%+ on 5 quizzes', icon: Award, unlocked: true, progress: 100 },
-      { id: 3, title: 'Consistent Student', description: '7-day study streak', icon: Flame, unlocked: true, progress: 100 },
-      { id: 4, title: 'High Scorer', description: 'Average score above 85%', icon: Target, unlocked: false, progress: 75 },
-      { id: 5, title: 'Explorer', description: 'Try all COC modules', icon: Users, unlocked: false, progress: 30 }
-    ],
-    recentActivity: [
-      { type: 'quiz', description: 'Completed COC 1 Quiz', score: 85, time: '2 hours ago', icon: CheckCircle },
-      { type: 'lesson', description: 'Started Operating Systems lesson', time: '5 hours ago', icon: BookOpen },
-      { type: 'achievement', description: 'Unlocked "Quiz Master" badge', time: '1 day ago', icon: Award },
-      { type: 'login', description: 'Logged in to dashboard', time: '30 minutes ago', icon: LogOut },
-      { type: 'review', description: 'Reviewed 50 flashcards', time: '2 days ago', icon: Eye }
-    ],
-    leaderboard: [
-      { rank: 1, name: 'You', score: 2840, avatar: '👑', trend: 'up' },
-      { rank: 2, name: 'Alice Chen', score: 2750, avatar: '🎯', trend: 'up' },
-      { rank: 3, name: 'Bob Smith', score: 2680, avatar: '🚀', trend: 'down' },
-      { rank: 4, name: 'Carol Davis', score: 2590, avatar: '⭐', trend: 'stable' },
-      { rank: 5, name: 'David Wilson', score: 2450, avatar: '📚', trend: 'down' }
-    ]
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-blue-50">
