@@ -124,7 +124,7 @@ function COCSelection() {
                   {/* Button - Always at bottom */}
                   <button
                     onClick={() => handleSelectCOC(coc)}
-                    className={`w-full bg-gradient-to-r ${coc.color} text-white font-bold py-3 md:py-4 rounded-lg hover:shadow-xl hover:shadow-blue-400/50 transform hover:scale-105 transition-all duration-300 text-sm md:text-base font-semibold mt-auto flex-shrink-0`}
+                    className={`w-full bg-gradient-to-r ${coc.color} text-white font-semibold py-3 md:py-4 rounded-lg hover:shadow-xl hover:shadow-blue-400/50 transform hover:scale-105 transition-all duration-300 text-sm md:text-base mt-auto flex-shrink-0`}
                   >
                     Start Quiz
                   </button>
