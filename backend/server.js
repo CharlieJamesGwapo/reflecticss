@@ -7,7 +7,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://frontend-h23vw2nuk-charlie-james-projects.vercel.app', 'https://frontend-liart-eight-31.vercel.app', 'https://reflecticss.vercel.app'],
   credentials: true
 }));
 
